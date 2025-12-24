@@ -103,8 +103,3 @@ def main():
     torch.cuda.empty_cache()
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Precompute embeddings for NT and ESM-2.")
-    _ = parser.parse_args()
-    main()
-

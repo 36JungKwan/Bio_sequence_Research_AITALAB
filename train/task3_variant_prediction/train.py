@@ -179,16 +179,4 @@ def train(args):
     writer.close()
     return test_res
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train fusion classifier with enhanced features.")
-    parser.add_argument("--lr", type=float, default=LR, help="Learning rate")
-    parser.add_argument("--epochs", type=int, default=EPOCHS)
-    parser.add_argument("--batch_size", type=int, default=BATCH_SIZE)
-    parser.add_argument("--patience", type=int, default=PATIENCE)
-    parser.add_argument("--dropout", type=float, default=DROPOUT)
-    parser.add_argument("--seed", type=int, default=SEED)
-    parser.add_argument("--log_dir", type=str, default="runs/experiment_1", help="TensorBoard log directory")
-    
-    args = parser.parse_args()
-    train(args)
 

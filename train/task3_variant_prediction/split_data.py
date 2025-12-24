@@ -68,9 +68,3 @@ def main(parquet_path: str):
     print(f"  test : {len(test_df)} -> {TEST_PARQUET}")
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Split parquet into train/val/test with chr20/21 as test.")
-    parser.add_argument("--parquet", default=RAW_PARQUET, help="Path to input parquet.")
-    args = parser.parse_args()
-    main(args.parquet)
-
