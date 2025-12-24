@@ -1,8 +1,23 @@
 import os
 import argparse
+import random
+import numpy as np
 import torch
+import matplotlib.pyplot as plt
+import seaborn as sns
 from torch.utils.data import DataLoader
-from sklearn.metrics import roc_auc_score, f1_score, accuracy_score
+from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
+import torchmetrics
+from torchmetrics.classification import (
+    BinaryAUROC, 
+    BinaryF1Score, 
+    BinaryAccuracy, 
+    BinaryMatthewsCorrCoef,
+    BinaryConfusionMatrix,
+    BinaryPrecision,
+    BinaryRecall
+)
 
 from dataset import VariantEmbDataset
 from model import FusionClassifier
@@ -17,37 +32,52 @@ from config import (
     EPOCHS,
     PATIENCE,
     BATCH_SIZE,
+    SEED
 )
 
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+def seed_everything(seed=42):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
-def compute_metrics(labels, logits):
-    probs = torch.sigmoid(torch.tensor(logits)).numpy()
-    preds = (probs >= 0.5).astype(int)
-    labels_np = torch.tensor(labels).numpy()
-    auc = roc_auc_score(labels_np, probs)
-    f1 = f1_score(labels_np, preds)
-    acc = accuracy_score(labels_np, preds)
-    return {"auc": auc, "f1": f1, "acc": acc}
+def plot_confusion_matrix(cm_tensor, epoch, stage):
+    """
+    Chuyển đổi tensor confusion matrix thành một hình ảnh matplotlib.
+    """
+    cm = cm_tensor.cpu().numpy()
+    fig, ax = plt.subplots(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt='g', cmap='Blues', ax=ax,
+                xticklabels=['Benign', 'Pathogenic'], 
+                yticklabels=['Benign', 'Pathogenic'])
+    ax.set_xlabel('Predicted labels')
+    ax.set_ylabel('True labels')
+    ax.set_title(f'Confusion Matrix - {stage} - Epoch {epoch}')
+    plt.tight_layout()
+    return fig
 
 
-def run_epoch(model, loader, criterion, optimizer=None):
+def run_epoch(model, loader, criterion, device, metrics_collection, cm_metric, optimizer=None, writer=None, epoch=0, stage="train"):    
     is_train = optimizer is not None
-    total_loss = 0.0
-    all_labels, all_logits = [], []
-    if is_train:
-        model.train()
-    else:
-        model.eval()
+    model.train() if is_train else model.eval()
 
-    for dna_ref, dna_alt, prot_ref, prot_alt, label in loader:
-        dna_ref = dna_ref.to(DEVICE)
-        dna_alt = dna_alt.to(DEVICE)
-        prot_ref = prot_ref.to(DEVICE)
-        prot_alt = prot_alt.to(DEVICE)
-        label = label.to(DEVICE).float()
+    total_loss = 0.0
+    metrics_collection.reset()
+    cm_metric.reset()
+
+    pbar = tqdm(loader, desc=f"{stage.capitalize()} Epoch {epoch}", leave=False)
+
+    for dna_ref, dna_alt, prot_ref, prot_alt, label in pbar:        
+        dna_ref = dna_ref.to(device)
+        dna_alt = dna_alt.to(device)
+        prot_ref = prot_ref.to(device)
+        prot_alt = prot_alt.to(device)
+        label = label.to(device).float()
 
         with torch.set_grad_enabled(is_train):
             logits = model(dna_ref, dna_alt, prot_ref, prot_alt)
@@ -58,78 +88,107 @@ def run_epoch(model, loader, criterion, optimizer=None):
                 optimizer.step()
 
         total_loss += loss.item() * len(label)
-        all_labels.append(label.detach().cpu())
-        all_logits.append(logits.detach().cpu())
+        preds = torch.sigmoid(logits)
+        metrics_collection.update(preds, label.int())
+        cm_metric.update(preds, label.int())
+        pbar.set_postfix(loss=f"{loss.item():.4f}")
 
-    total = len(loader.dataset)
-    avg_loss = total_loss / total
-    labels_cat = torch.cat(all_labels)
-    logits_cat = torch.cat(all_logits)
-    metrics = compute_metrics(labels_cat, logits_cat)
-    return avg_loss, metrics
+    avg_loss = total_loss / len(loader.dataset)
+    results = {k: v.item() for k, v in metrics_collection.compute().items()}
+    results['loss'] = avg_loss
+
+    if writer:
+        for name, value in results.items():
+            writer.add_scalar(f"{stage}/{name}", value, epoch)
+        
+        cm_tensor = cm_metric.compute()
+        fig = plot_confusion_matrix(cm_tensor, epoch, stage)
+        writer.add_figure(f"ConfusionMatrix/{stage}", fig, epoch)
+        plt.close(fig)
+            
+    return results
 
 
-def train():
-    print(f"Device: {DEVICE}")
+def train(args):
+    seed_everything(args.seed)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Device: {device}")
+
+    writer = SummaryWriter(log_dir=args.log_dir)
+
     train_ds = VariantEmbDataset(TRAIN_EMB)
     val_ds = VariantEmbDataset(VAL_EMB)
     test_ds = VariantEmbDataset(TEST_EMB)
 
-    dna_dim = train_ds.dna_ref.shape[1]
-    prot_dim = train_ds.prot_ref.shape[1]
+    loader_args = {'batch_size': args.batch_size, 'num_workers': 4, 'pin_memory': True}
+    train_loader = DataLoader(train_ds, shuffle=True, **loader_args)
+    val_loader = DataLoader(val_ds, shuffle=False, **loader_args)
+    test_loader = DataLoader(test_ds, shuffle=False, **loader_args)
 
     model = FusionClassifier(
-        dna_dim=dna_dim,
-        prot_dim=prot_dim,
+        dna_dim=train_ds.dna_ref.shape[1],
+        prot_dim=train_ds.prot_ref.shape[1],
         proj_dim=PROJ_DIM,
         hidden_dims=FUSION_HIDDEN,
-        dropout=DROPOUT,
-    ).to(DEVICE)
-
-    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
-    val_loader = DataLoader(val_ds, batch_size=BATCH_SIZE, shuffle=False)
-    test_loader = DataLoader(test_ds, batch_size=BATCH_SIZE, shuffle=False)
+        dropout=args.dropout,
+    ).to(device)
 
     criterion = torch.nn.BCEWithLogitsLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-    best_val = float("inf")
-    patience = 0
-    best_state = None
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
 
-    for epoch in range(1, EPOCHS + 1):
-        train_loss, train_metrics = run_epoch(model, train_loader, criterion, optimizer)
-        val_loss, val_metrics = run_epoch(model, val_loader, criterion, optimizer=None)
+    metrics = torchmetrics.MetricCollection({
+        'auc': BinaryAUROC(),
+        'acc': BinaryAccuracy(),
+        'f1_micro': BinaryF1Score(average='micro'),
+        'f1_macro': BinaryF1Score(average='macro'),
+        'mcc': BinaryMatthewsCorrCoef()
+    }).to(device)
 
-        log_line = (
-            f"[{epoch}] "
-            f"train_loss={train_loss:.4f} val_loss={val_loss:.4f} "
-            f"val_auc={val_metrics['auc']:.4f} val_f1={val_metrics['f1']:.4f} val_acc={val_metrics['acc']:.4f}"
-        )
-        print(log_line)
+    cm_metric = BinaryConfusionMatrix().to(device)
 
-        if val_loss < best_val:
-            best_val = val_loss
-            patience = 0
-            best_state = model.state_dict()
+    best_val_loss = float("inf")
+    patience_counter = 0
+    save_path = os.path.join(os.path.dirname(TRAIN_EMB), "best_fusion_model.pt")
+
+    for epoch in range(1, args.epochs + 1):
+        train_res = run_epoch(model, train_loader, criterion, device, metrics, cm_metric, optimizer, writer, epoch, "train")
+        val_res = run_epoch(model, val_loader, criterion, device, metrics, cm_metric, None, writer, epoch, "val")
+
+        print(f"[{epoch}] Train Loss: {train_res['loss']:.4f} | Val Loss: {val_res['loss']:.4f} | Train Acc: {train_res['acc']:.4f} | Val Acc: {val_res['acc']:.4f}")
+
+        scheduler.step(val_res['loss'])
+
+        if val_res['loss'] < best_val_loss:
+            best_val_loss = val_res['loss']
+            patience_counter = 0
+            torch.save(model.state_dict(), save_path)
+            print(f"--> Saved best model checkpoint to {save_path}")
         else:
-            patience += 1
-            if patience >= PATIENCE:
-                print("Early stopping.")
+            patience_counter += 1
+            if patience_counter >= args.patience:
+                print("Early stopping triggered.")
                 break
 
-    if best_state is not None:
-        model.load_state_dict(best_state)
-
-    test_loss, test_metrics = run_epoch(model, test_loader, criterion, optimizer=None)
-    print(f"[TEST] loss={test_loss:.4f} auc={test_metrics['auc']:.4f} f1={test_metrics['f1']:.4f} acc={test_metrics['acc']:.4f}")
-
-    torch.save(model.state_dict(), os.path.join(os.path.dirname(TRAIN_EMB), "fusion_model.pt"))
-    return {"test_loss": test_loss, **test_metrics}
-
+    print("\n--- Testing with Best Model ---")
+    model.load_state_dict(torch.load(save_path))
+    test_res = run_epoch(model, test_loader, criterion, device, metrics, cm_metric, None, writer, args.epochs, "test")
+    print(f"[TEST] Loss: {test_res['loss']:.4f} | AUC: {test_res['auc']:.4f} | MCC: {test_res['mcc']:.4f} | Acc: {test_res['acc']:.4f}")
+    
+    writer.close()
+    return test_res
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train fusion classifier on precomputed embeddings.")
-    _ = parser.parse_args()
-    train()
+    parser = argparse.ArgumentParser(description="Train fusion classifier with enhanced features.")
+    parser.add_argument("--lr", type=float, default=LR, help="Learning rate")
+    parser.add_argument("--epochs", type=int, default=EPOCHS)
+    parser.add_argument("--batch_size", type=int, default=BATCH_SIZE)
+    parser.add_argument("--patience", type=int, default=PATIENCE)
+    parser.add_argument("--dropout", type=float, default=DROPOUT)
+    parser.add_argument("--seed", type=int, default=SEED)
+    parser.add_argument("--log_dir", type=str, default="runs/experiment_1", help="TensorBoard log directory")
+    
+    args = parser.parse_args()
+    train(args)
 

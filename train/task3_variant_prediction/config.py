@@ -1,7 +1,7 @@
 import os
 
 # Paths
-RAW_PARQUET = os.environ.get("TASK3_PARQUET", "data_processing/variant_sequences.parquet")
+RAW_PARQUET = os.environ.get("TASK3_PARQUET", "điền path của file variant_protein_sequence_101aa.parquet mà ae vừa giải nén từ cái sequence_variant_dataset.rar trên drive")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 TRAIN_PARQUET = os.path.join(DATA_DIR, "train.parquet")
 VAL_PARQUET = os.path.join(DATA_DIR, "val.parquet")
