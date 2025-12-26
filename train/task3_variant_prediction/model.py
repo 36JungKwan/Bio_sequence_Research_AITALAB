@@ -7,6 +7,7 @@ class ModalityProjector(nn.Module):
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(emb_dim * 3, proj_dim),
+            nn.LayerNorm(proj_dim),
             nn.GELU(),
             nn.Dropout(dropout),
         )

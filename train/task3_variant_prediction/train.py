@@ -88,6 +88,7 @@ def run_epoch(model, loader, criterion, device, metrics_collection, cm_metric, o
             if is_train:
                 optimizer.zero_grad()
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
 
         total_loss += loss.item() * len(label)
@@ -140,8 +141,8 @@ def train(args):
     print(f"  Patience: {args.patience}")
     print(f"  Dropout: {args.dropout}")
     print(f"  Seed: {args.seed}")
-    print(f"  Proj Dim: {PROJ_DIM}")
-    print(f"  Fusion Hidden: {FUSION_HIDDEN}")
+    print(f"  Proj Dim: {args.proj_dim}")
+    print(f"  Fusion Hidden: {args.fusion_hidden}")
     print(f"  Log Dir: {args.log_dir}")
     print(f"  Experiment Dir: {exp_dir}")
     print("=" * 70)
@@ -156,8 +157,8 @@ def train(args):
         "patience": args.patience,
         "dropout": args.dropout,
         "seed": args.seed,
-        "proj_dim": PROJ_DIM,
-        "fusion_hidden": FUSION_HIDDEN,
+        "proj_dim": args.proj_dim,
+        "fusion_hidden": args.fusion_hidden,
         "log_dir": args.log_dir,
     }
     with open(os.path.join(exp_dir, "config.json"), "w") as f:
@@ -187,14 +188,13 @@ def train(args):
     model = FusionClassifier(
         dna_dim=train_ds.dna_ref.shape[1],
         prot_dim=train_ds.prot_ref.shape[1],
-        proj_dim=PROJ_DIM,
-        hidden_dims=FUSION_HIDDEN,
+        proj_dim=args.proj_dim,
+        hidden_dims=args.fusion_hidden,
         dropout=args.dropout,
     ).to(device)
 
     criterion = torch.nn.BCEWithLogitsLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
 
     metrics = torchmetrics.MetricCollection({
@@ -245,8 +245,8 @@ def train(args):
         "lr": args.lr,
         "dropout": args.dropout,
         "batch_size": args.batch_size,
-        "proj_dim": PROJ_DIM,
-        "fusion_hidden": str(FUSION_HIDDEN),
+        "proj_dim": args.proj_dim,
+        "fusion_hidden": str(args.fusion_hidden),
         "patience": args.patience,
     }
     metrics_dict = {
