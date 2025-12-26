@@ -321,5 +321,3 @@ Xem LICENSE file trong repository chính.
 ---
 
 **Tác giả**: Bio Sequence Research Team  
-**Cập nhật**: 2024
-
