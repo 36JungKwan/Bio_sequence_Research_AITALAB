@@ -92,7 +92,7 @@ def run_epoch(model, loader, criterion, device, metrics_collection, cm_metric, o
                 optimizer.step()
 
         total_loss += loss.item() * len(label)
-        preds = torch.sigmoid(logits)
+        preds = (torch.sigmoid(logits) > 0.5).int()
         metrics_collection.update(preds, label.int())
         cm_metric.update(preds, label.int())
         pbar.set_postfix(loss=f"{loss.item():.4f}")
