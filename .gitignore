@@ -1,4 +1,6 @@
 *.pt
-*.json
+*.vscode
 *.pyc
 *.parquet
+*_pycache_
+*.venv
