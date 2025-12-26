@@ -141,8 +141,6 @@ def train(args):
     metrics = torchmetrics.MetricCollection({
         'auc': BinaryAUROC(),
         'acc': BinaryAccuracy(),
-        'f1_micro': BinaryF1Score(average='micro'),
-        'f1_macro': BinaryF1Score(average='macro'),
         'mcc': BinaryMatthewsCorrCoef()
     }).to(device)
 
