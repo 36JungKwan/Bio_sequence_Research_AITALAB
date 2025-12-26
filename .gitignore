@@ -1,1 +1,4 @@
 *.pt
+*.json
+*.pyc
+*.parquet
