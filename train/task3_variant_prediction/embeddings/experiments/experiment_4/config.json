@@ -1,0 +1,16 @@
+{
+  "exp_name": "experiment_4",
+  "timestamp": "2025-12-26T22:14:33.157753",
+  "lr": 0.0001,
+  "epochs": 30,
+  "batch_size": 128,
+  "patience": 5,
+  "dropout": 0.3,
+  "seed": 42,
+  "proj_dim": 256,
+  "fusion_hidden": [
+    256,
+    128
+  ],
+  "log_dir": "runs\\experiment_4"
+}

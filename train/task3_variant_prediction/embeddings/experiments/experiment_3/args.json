@@ -1,0 +1,16 @@
+{
+  "proj_dim": 512,
+  "fusion_hidden": [
+    512,
+    256
+  ],
+  "lr": 5e-05,
+  "epochs": 30,
+  "batch_size": 128,
+  "patience": 5,
+  "dropout": 0.4,
+  "weight_decay": 0.0001,
+  "seed": 42,
+  "exp_name": "experiment_3",
+  "log_dir": "runs\\experiment_3"
+}
