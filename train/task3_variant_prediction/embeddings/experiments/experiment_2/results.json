@@ -1,0 +1,24 @@
+{
+  "exp_name": "experiment_2",
+  "timestamp": "2025-12-26T21:27:10.401634",
+  "best_val_loss": 0.14909337818249674,
+  "test_results": {
+    "acc": 0.9375274181365967,
+    "auc": 0.9840526580810547,
+    "balanced_acc": 0.5,
+    "f1_macro": 0.3626711368560791,
+    "mcc": 0.8726336359977722,
+    "precision": 0.9273004531860352,
+    "recall": 0.9277721047401428,
+    "loss": 0.15842028631731142
+  },
+  "epochs_trained": 7,
+  "hparams": {
+    "lr": 0.0001,
+    "dropout": 0.3,
+    "batch_size": 128,
+    "proj_dim": 512,
+    "fusion_hidden": "[512, 256]",
+    "patience": 5
+  }
+}
