@@ -7,6 +7,7 @@ import seaborn as sns
 import json
 import shutil
 from datetime import datetime
+from torchinfo import summary
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
@@ -192,6 +193,30 @@ def train(args):
         hidden_dims=args.fusion_hidden,
         dropout=args.dropout,
     ).to(device)
+
+    print("\n" + "="*30 + " MODEL SUMMARY " + "="*30)
+    input_data_shapes = [
+        (args.batch_size, train_ds.dna_ref.shape[1]),  # dna_ref
+        (args.batch_size, train_ds.dna_ref.shape[1]),  # dna_alt
+        (args.batch_size, train_ds.prot_ref.shape[1]), # prot_ref
+        (args.batch_size, train_ds.prot_ref.shape[1])  # prot_alt
+    ]
+
+    model_stats = summary(
+        model, 
+        input_size=input_data_shapes,
+        col_names=["input_size", "output_size", "num_params", "kernel_size", "mult_adds"],
+        device=device,
+        verbose=0
+    )
+    
+    print(model_stats)
+    
+    summary_path = os.path.join(exp_dir, "model_summary.txt")
+    with open(summary_path, "w", encoding="utf-8") as f:
+        f.write(str(model_stats))
+    print(f"--> Model summary saved to {summary_path}")
+    print("="*75 + "\n")
 
     criterion = torch.nn.BCEWithLogitsLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
