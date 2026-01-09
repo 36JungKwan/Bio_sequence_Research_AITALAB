@@ -20,7 +20,8 @@ from torchmetrics.classification import (
     BinaryMatthewsCorrCoef,
     BinaryConfusionMatrix,
     BinaryPrecision,
-    BinaryRecall
+    BinaryRecall,
+    BinarySpecificity
 )
 
 from dataset import VariantEmbDataset
@@ -36,7 +37,8 @@ from config import (
     EPOCHS,
     PATIENCE,
     BATCH_SIZE,
-    SEED
+    SEED,
+    MODE
 )
 
 
@@ -136,6 +138,7 @@ def train(args):
     print("=" * 70)
     print(f"  Experiment Name: {args.exp_name}")
     print(f"  Device: {device}")
+    print(f"  Mode: {args.mode}")
     print(f"  Learning Rate: {args.lr}")
     print(f"  Epochs: {args.epochs}")
     print(f"  Batch Size: {args.batch_size}")
@@ -152,6 +155,7 @@ def train(args):
     config_snapshot = {
         "exp_name": args.exp_name,
         "timestamp": datetime.now().isoformat(),
+        "mode": args.mode,
         "lr": args.lr,
         "epochs": args.epochs,
         "batch_size": args.batch_size,
@@ -192,6 +196,7 @@ def train(args):
         proj_dim=args.proj_dim,
         hidden_dims=args.fusion_hidden,
         dropout=args.dropout,
+        mode=args.mode
     ).to(device)
 
     print("\n" + "="*30 + " MODEL SUMMARY " + "="*30)
@@ -229,7 +234,8 @@ def train(args):
         'balanced_acc': MulticlassAccuracy(num_classes=2, average='macro'),
         'f1_macro': MulticlassF1Score(num_classes=2, average='macro'),
         'precision': BinaryPrecision(),
-        'recall': BinaryRecall()
+        'recall': BinaryRecall(),
+        'specificity': BinarySpecificity()
     }).to(device)
 
     cm_metric = BinaryConfusionMatrix().to(device)
@@ -262,11 +268,12 @@ def train(args):
     print("\n--- Testing with Best Model ---")
     model.load_state_dict(torch.load(save_path))
     test_res = run_epoch(model, test_loader, criterion, device, metrics, cm_metric, None, writer, args.epochs, "test")
-    print(f"[TEST] Loss: {test_res['loss']:.4f} | AUC: {test_res['auc']:.4f} | MCC: {test_res['mcc']:.4f} | Acc: {test_res['acc']:.4f}")
+    print(f"[TEST] Loss: {test_res['loss']:.4f} | AUC: {test_res['auc']:.4f} | MCC: {test_res['mcc']:.4f} | Acc: {test_res['acc']:.4f} | Spec: {test_res['specificity']:.4f}")
     print(f"[TEST] Balanced Acc: {test_res['balanced_acc']:.4f} | F1_macro: {test_res['f1_macro']:.4f} | Precision: {test_res['precision']:.4f} | Recall: {test_res['recall']:.4f}")
     
     # Lưu hparams vào TensorBoard
     hparams = {
+        "mode": args.mode,
         "lr": args.lr,
         "dropout": args.dropout,
         "batch_size": args.batch_size,
@@ -282,6 +289,7 @@ def train(args):
         "test_f1_macro": test_res['f1_macro'],
         "test_precision": test_res['precision'],
         "test_recall": test_res['recall'],
+        "test_specificity": test_res['specificity'],
         "test_loss": test_res['loss'],
         "best_val_loss": best_val_loss,
     }

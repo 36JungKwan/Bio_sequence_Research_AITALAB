@@ -15,6 +15,7 @@ TEST_EMB = os.path.join(EMB_DIR, "test_embeddings.pt")
 # Models
 NT_MODEL = "InstaDeepAI/nucleotide-transformer-500m-human-ref"
 ESM_MODEL = "facebook/esm2_t33_650M_UR50D"
+MODE = 'both'
 
 # Sequence lengths (fixed, center token pooling)
 DNA_SEQ_LEN = 601
