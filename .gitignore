@@ -4,3 +4,4 @@
 *.parquet
 *_pycache_
 *.venv
+*.csv
