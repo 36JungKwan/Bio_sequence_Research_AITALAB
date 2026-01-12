@@ -34,18 +34,19 @@ vep_cache/
 ├── Plugins/                # Chứa file .pm của plugin
 │   ├── SpliceAI.pm
 │   └── dbNSFP.pm
-├── Homo_sapiens.GRCh38.dna.primary_assembly.fa      # File tham chiếu Genome
-├── Homo_sapiens.GRCh38.dna.primary_assembly.fa.fai  # Index của file fa
-├── spliceai_snv.vcf.gz     # Dữ liệu SpliceAI (kèm file .tbi)
-├── spliceai_indel.vcf.gz   # Dữ liệu SpliceAI (kèm file .tbi)
-└── dbNSFP.txt.gz           # Dữ liệu dbNSFP (kèm file .tbi)
+├── spliceai_snv.vcf.gz      
+├── spliceai_snv.vcf.gz.tbi
+├── spliceai_indel.vcf.gz    
+├── spliceai_indel.vcf.gz.tbi
+├── dbNSFP.txt.gz            
+└── dbNSFP.txt.gz.tbi
 
 ```
 
 ### Cách tải nhanh dữ liệu:
 
 * **VEP Cache:** Chạy lệnh `docker run -t -i -v /path/to/vep_cache:/opt/vep/.vep ensemblorg/ensembl-vep INSTALL.pl -a cf -s homo_sapiens -y GRCh38`
-* **Plugins:** Tải từ [VEP_plugins GitHub](https://github.com/Ensembl/VEP_plugins).
+* **Plugins:** Tải cho [SpliceAI.pm](https://github.com/Ensembl/VEP_plugins/blob/release/115/SpliceAI.pm) - Tải cho [dbNSFP.pm](https://github.com/Ensembl/VEP_plugins/blob/release/115/dbNSFP.pm).
 * **Dữ liệu Plugin:** Tải từ các nguồn của Illumina (SpliceAI) và trang chủ dbNSFP. **Tất cả các file dữ liệu phải được Index bằng Tabix (tạo file .tbi).**
 
 ---
