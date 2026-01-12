@@ -12,7 +12,7 @@ This project focuses on 3 main tasks:
 
 | Task | Description | Data | Model |
 |------|-------------|------|-------|
-| **Task 1: Splicing Prediction** | Predict splicing site type (donor/acceptor) | Sequence ~200bp | LSTM/Transformer |
+| **Task 1: Splicing Prediction** | Predict splicing site type (donor/acceptor) | Sequence ~200bp | NT embeddings |
 | **Task 2: Protein Prediction** | Predict protein properties from sequence | Protein sequence | ESM-2 embeddings |
 | **Task 3: Variant Pathogenicity** | Classify variants (pathogenic/benign) | ClinVar + DNA/Protein seq | Multi-modal Fusion Model |
 
