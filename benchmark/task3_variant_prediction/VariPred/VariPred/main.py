@@ -157,17 +157,16 @@ def run_VariPred(target_ds,output):
     print(f"Your prediction results are saved in ../example/output_results/{output}.txt")
 
 
-parser = argparse.ArgumentParser(description='add args for training the VariPred model')
-parser.add_argument('--df_path', '-p', default='../example/dataset', type=str)
-parser.add_argument('--train_ds', '-tr', default='train', type=str)
-parser.add_argument('--test_ds', '-ts', default='test', type=str)
-parser.add_argument('--pred', '-i', default='target', type=str)
-parser.add_argument('--output', '-o', default='VariPred_output', type=str)
-parser.add_argument('--train', '-t', action="store_true")
-
-args = parser.parse_args()
-
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='add args for training the VariPred model')
+    parser.add_argument('--df_path', '-p', default='../example/dataset', type=str)
+    parser.add_argument('--train_ds', '-tr', default='train', type=str)
+    parser.add_argument('--test_ds', '-ts', default='test', type=str)
+    parser.add_argument('--pred', '-i', default='target', type=str)
+    parser.add_argument('--output', '-o', default='VariPred_output', type=str)
+    parser.add_argument('--train', '-t', action="store_true")
+
+    args = parser.parse_args()
 
     print('=============== Loading data... ===============')
     
