@@ -36,3 +36,4 @@ Project này sử dụng mô hình **HyenaDNA** để dự đoán tính chất c
 ## Yêu cầu Dependencies
 
 pip install torch transformers pandas numpy torchmetrics matplotlib seaborn tqdm torchinfo tensorboard
+pip install flash-attn --no-build-isolation
