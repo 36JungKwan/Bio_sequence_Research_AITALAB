@@ -1,7 +1,5 @@
 *.pt
 *.vscode
 *.pyc
-*.parquet
 *_pycache_
 *.venv
-*.csv
