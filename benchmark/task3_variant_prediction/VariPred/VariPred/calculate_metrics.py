@@ -8,7 +8,8 @@ from sklearn.metrics import (
     f1_score, 
     matthews_corrcoef, 
     precision_score, 
-    recall_score
+    recall_score,
+    confusion_matrix
 )
 
 def evaluate_performance(res_file, original_file):
@@ -39,8 +40,11 @@ def evaluate_performance(res_file, original_file):
     y_true = df['label'].values
     y_scores = df['prediction_score'].values
     
-    # Chuyển đổi xác suất thành nhãn nhị phân (ngưỡng 0.5)
-    y_pred = (y_scores >= 0.5).astype(int)
+    # Chuyển đổi xác suất thành nhãn nhị phân (ngưỡng 0.2 như VariPred)
+    y_pred = (y_scores >= 0.2).astype(int)
+
+    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
     
     # 4. Tính toán các Metric theo yêu cầu của bạn
     metrics = {
@@ -50,7 +54,8 @@ def evaluate_performance(res_file, original_file):
         "f1_macro": f1_score(y_true, y_pred, average='macro'),
         "mcc": matthews_corrcoef(y_true, y_pred),
         "precision": precision_score(y_true, y_pred),
-        "recall": recall_score(y_true, y_pred)
+        "recall": recall_score(y_true, y_pred),
+        "specificity": specificity
     }
     
     return metrics
