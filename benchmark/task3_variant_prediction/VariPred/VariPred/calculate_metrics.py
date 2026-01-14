@@ -15,7 +15,10 @@ def evaluate_performance(res_file, original_file):
     # 1. Đọc kết quả dự đoán (Dùng tab separator)
     results = pd.read_csv(res_file, sep='\t')
     # 2. Đọc file gốc có NHÃN THẬT (không dùng file target.csv nhãn -1)
-    original = pd.read_csv(original_file)
+    if original_file.endswith('.parquet'):
+        original = pd.read_parquet(original_file)
+    else:
+        original = pd.read_csv(original_file)
     
     # 2. Merge dữ liệu để khớp nhãn và điểm số
     # Đảm bảo AlleleID cùng kiểu dữ liệu
