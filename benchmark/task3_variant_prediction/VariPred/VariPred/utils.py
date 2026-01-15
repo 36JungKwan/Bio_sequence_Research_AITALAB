@@ -127,11 +127,11 @@ def generate_embeds_and_save(df, save_path, data_class, model, batch_converter, 
             
             result = torch.cat((wt_repr, mt_repr), dim=1) # concat wt_emb with wt_emb -> batch_size, 2560
 
-            wt_total_logits = wt_result['logits'][:,:,4:24][batch_indices, aa_index]
-            mt_total_logits = mt_result['logits'][:,:,4:24][batch_indices, aa_index]
+            total_logits = wt_result['logits'][:,:,4:24] 
+            total_logits = total_logits[batch_indices, aa_index]
 
-            wt_logits = get_logits(wt_total_logits, wt_aa, esm_dict)
-            mt_logits = get_logits(mt_total_logits, mt_aa, esm_dict)
+            wt_logits = get_logits(total_logits, wt_aa, esm_dict)
+            mt_logits = get_logits(total_logits, mt_aa, esm_dict)
             logits = torch.log(mt_logits/wt_logits).unsqueeze(1)
             
             concat.append(result)
@@ -251,7 +251,7 @@ def trainer(train_loader, val_loader, model, device=config.device, early_stop=co
 
             pred = model(b_seq.float())
             b_labels = b_labels.float()
-            loss = criterion(pred[:, 1], b_labels)
+            loss = criterion(pred[:, 0], b_labels)
 
             # Compute gradient(backpropagation).
             loss.backward()
@@ -286,7 +286,7 @@ def trainer(train_loader, val_loader, model, device=config.device, early_stop=co
             with torch.no_grad():
                 b_labels = b_labels.float()
                 pred = model(b_seq.float())
-                loss = criterion(pred[:, 1], b_labels)
+                loss = criterion(pred[:, 0], b_labels)
 
                 # preds.append(pred[:,0].detach().cpu()[0].tolist())
                 # labels.append(b_labels.detach().cpu()[0].tolist())
@@ -343,7 +343,7 @@ def predict(test_loader, model, device):
         b_seq, b_labels = tuple(t.to(device) for t in batch)
         with torch.no_grad():
             pred = model(b_seq.float())
-            preds.append(pred[:, 1].detach().cpu())
+            preds.append(pred[:, 0].detach().cpu())
             labels.append(b_labels.detach().cpu())
     preds = torch.cat(preds, dim=0)
     labels = torch.cat(labels, dim=0)

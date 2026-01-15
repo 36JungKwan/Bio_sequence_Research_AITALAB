@@ -45,11 +45,9 @@ class FusionClassifier(nn.Module):
     def forward(self, dna_ref, dna_alt, prot_ref, prot_alt):
         if self.mode == 'dna':
             fused = self.dna_proj(dna_ref, dna_alt)
-        
-        if self.mode == 'prot':
+        elif self.mode == 'prot':
             fused = self.prot_proj(prot_ref, prot_alt)
-        
-        else:
+        else:  # mode == 'both'
             dna_z = self.dna_proj(dna_ref, dna_alt)
             prot_z = self.prot_proj(prot_ref, prot_alt)
             fused = torch.cat([dna_z, prot_z], dim=-1)

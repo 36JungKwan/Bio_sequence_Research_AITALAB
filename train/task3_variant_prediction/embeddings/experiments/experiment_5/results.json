@@ -1,0 +1,26 @@
+{
+  "exp_name": "experiment_5",
+  "timestamp": "2026-01-15T17:56:35.657209",
+  "best_val_loss": 0.46751130794911633,
+  "test_results": {
+    "acc": 0.7832091450691223,
+    "auc": 0.7820495367050171,
+    "balanced_acc": 0.7820494174957275,
+    "f1_macro": 0.7802316546440125,
+    "mcc": 0.5612160563468933,
+    "precision": 0.7365617156028748,
+    "recall": 0.7736520767211914,
+    "specificity": 0.7904468178749084,
+    "loss": 0.450743065323029
+  },
+  "epochs_trained": 8,
+  "hparams": {
+    "mode": "dna",
+    "lr": 0.0001,
+    "dropout": 0.3,
+    "batch_size": 128,
+    "proj_dim": 512,
+    "fusion_hidden": "[512, 256]",
+    "patience": 5
+  }
+}

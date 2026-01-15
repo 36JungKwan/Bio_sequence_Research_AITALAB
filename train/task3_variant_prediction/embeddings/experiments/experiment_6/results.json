@@ -1,0 +1,26 @@
+{
+  "exp_name": "experiment_6",
+  "timestamp": "2026-01-15T18:05:26.511124",
+  "best_val_loss": 0.14919786053630046,
+  "test_results": {
+    "acc": 0.934239387512207,
+    "auc": 0.9298131465911865,
+    "balanced_acc": 0.9298131465911865,
+    "f1_macro": 0.9325015544891357,
+    "mcc": 0.8659840822219849,
+    "precision": 0.9468883872032166,
+    "recall": 0.8977619409561157,
+    "specificity": 0.9618644118309021,
+    "loss": 0.16024791707882086
+  },
+  "epochs_trained": 7,
+  "hparams": {
+    "mode": "prot",
+    "lr": 0.0001,
+    "dropout": 0.3,
+    "batch_size": 128,
+    "proj_dim": 512,
+    "fusion_hidden": "[512, 256]",
+    "patience": 5
+  }
+}

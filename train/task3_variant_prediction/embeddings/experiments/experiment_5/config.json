@@ -1,0 +1,17 @@
+{
+  "exp_name": "experiment_5",
+  "timestamp": "2026-01-15T17:55:26.610975",
+  "mode": "dna",
+  "lr": 0.0001,
+  "epochs": 30,
+  "batch_size": 128,
+  "patience": 5,
+  "dropout": 0.3,
+  "seed": 42,
+  "proj_dim": 512,
+  "fusion_hidden": [
+    512,
+    256
+  ],
+  "log_dir": "runs\\experiment_5"
+}
