@@ -38,7 +38,9 @@ from config import (
     PATIENCE,
     BATCH_SIZE,
     SEED,
-    MODE
+    MODE,
+    FEATURE_MODE,
+    FUSION_METHOD
 )
 
 
@@ -139,6 +141,8 @@ def train(args):
     print(f"  Experiment Name: {args.exp_name}")
     print(f"  Device: {device}")
     print(f"  Mode: {args.mode}")
+    print(f"  Fusion Method: {args.fusion_method}")
+    print(f"  Feature Mode: {args.feature_mode}")
     print(f"  Learning Rate: {args.lr}")
     print(f"  Epochs: {args.epochs}")
     print(f"  Batch Size: {args.batch_size}")
@@ -156,6 +160,8 @@ def train(args):
         "exp_name": args.exp_name,
         "timestamp": datetime.now().isoformat(),
         "mode": args.mode,
+        "fusion_method": args.fusion_method, 
+        "feature_mode": args.feature_mode,
         "lr": args.lr,
         "epochs": args.epochs,
         "batch_size": args.batch_size,
@@ -196,7 +202,9 @@ def train(args):
         proj_dim=args.proj_dim,
         hidden_dims=args.fusion_hidden,
         dropout=args.dropout,
-        mode=args.mode
+        mode=args.mode,
+        fusion_method=args.fusion_method,
+        feature_mode=args.feature_mode
     ).to(device)
 
     print("\n" + "="*30 + " MODEL SUMMARY " + "="*30)
@@ -274,6 +282,8 @@ def train(args):
     # Lưu hparams vào TensorBoard
     hparams = {
         "mode": args.mode,
+        "fusion_method": args.fusion_method,
+        "feature_mode": args.feature_mode,
         "lr": args.lr,
         "dropout": args.dropout,
         "batch_size": args.batch_size,

@@ -15,23 +15,27 @@ TEST_EMB = os.path.join(EMB_DIR, "test_embeddings.pt")
 # Models
 NT_MODEL = "InstaDeepAI/nucleotide-transformer-500m-human-ref"
 ESM_MODEL = "facebook/esm2_t33_650M_UR50D"
-MODE = 'both'
 
-# Sequence lengths (fixed, center token pooling)
+# Fusion Settings
+MODE = 'both'               # Options: 'dna', 'prot', 'both'
+FUSION_METHOD = 'concat' # Options: 'concat', 'cross_attn'
+FEATURE_MODE = 'all'        # Options: 'all' (ref, alt, diff), 'ref_alt', 'diff', 'ref', 'alt'
+
+# Dimensions & Layers
+PROJ_DIM = 512
+FUSION_HIDDEN = [512, 256]
+DROPOUT = 0.2
+
+# Data processing
 DNA_SEQ_LEN = 601
 PROT_SEQ_LEN = 101
-
-# Splits
 TEST_CHROMS = {"chr20", "chr21", "20", "21"}
 VAL_RATIO = 0.15
 SEED = 42
 
-# Embedding + training
+# Training 
 DNA_BATCH = 32
 PROT_BATCH = 4
-PROJ_DIM = 512
-FUSION_HIDDEN = [512, 256]
-DROPOUT = 0.2
 LR = 1e-3
 EPOCHS = 30
 PATIENCE = 5
