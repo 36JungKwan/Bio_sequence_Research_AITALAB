@@ -20,6 +20,7 @@ ESM_MODEL = "facebook/esm2_t33_650M_UR50D"
 MODE = 'both'               # Options: 'dna', 'prot', 'both'
 FUSION_METHOD = 'concat' # Options: 'concat', 'cross_attn'
 FEATURE_MODE = 'all'        # Options: 'all' (ref, alt, diff), 'ref_alt', 'diff', 'ref', 'alt'
+USE_GATING = False
 
 # Dimensions & Layers
 PROJ_DIM = 512
