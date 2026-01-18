@@ -115,6 +115,7 @@ pip install pandas numpy torchmetrics tensorboard tqdm seaborn matplotlib
    parser.add_argument("--mode", type=str, default="both", choices=['dna', 'prot', 'both'])
    parser.add_argument("--fusion_method", type=str, default="concat", choices=['concat', 'cross_attn'])
    parser.add_argument("--feature_mode", type=str, default="all", choices=['all', 'ref_alt', 'diff', 'ref', 'alt'])
+   parser.add_argument("--use_gating", type=bool, default=False, help="Enable gated fusion")
    
    # Hyperparameters
    parser.add_argument("--lr", type=float, default=1e-3)
@@ -150,17 +151,25 @@ python train.py --exp_name experiment_1 --lr 1e-3 --dropout 0.2
 # 4. Train with cross-attention fusion
 python train.py --exp_name experiment_2_cross_attn --fusion_method cross_attn --lr 1e-3
 
-# 5. Train with diff features only
-python train.py --exp_name experiment_3_diff --feature_mode diff --lr 1e-3
+# 5. Train with gated fusion (adaptive modality weighting)
+python train.py --exp_name experiment_3_gated --use_gating True --lr 1e-3
 
-# 6. Train DNA-only (ablation)
-python train.py --exp_name experiment_4_dna_only --mode dna --lr 1e-3
+# 6. Train with diff features only
+python train.py --exp_name experiment_4_diff --feature_mode diff --lr 1e-3
 
-# 7. Train Protein-only (ablation)
-python train.py --exp_name experiment_5_prot_only --mode prot --lr 1e-3
+# 7. Train DNA-only (ablation)
+python train.py --exp_name experiment_5_dna_only --mode dna --lr 1e-3
 
-# 8. Advanced: Cross-attention + diff features
-python train.py --exp_name experiment_6_cross_attn_diff --fusion_method cross_attn --feature_mode diff --lr 5e-4 --dropout 0.3
+# 8. Train Protein-only (ablation)
+python train.py --exp_name experiment_6_prot_only --mode prot --lr 1e-3
+
+# 9. Advanced: Cross-attention + gated fusion + diff features
+python train.py --exp_name experiment_7_advanced \
+  --fusion_method cross_attn \
+  --use_gating True \
+  --feature_mode diff \
+  --lr 5e-4 \
+  --dropout 0.3
 ```
 
 ## 🎯 Key Features
@@ -183,7 +192,35 @@ Control how modalities are combined:
   - Protein attends to DNA features
   - Better captures synergistic effects
 
-### 3. **Feature Mode Options**
+### 3. **Gated Fusion Mechanism** (NEW)
+
+**Adaptive modality weighting via learned gates:**
+- **`use_gating=True`**: Combine modalities using a learned gating mechanism
+- **`use_gating=False`**: Use simple concatenation (default)
+
+**Gating Formula:**
+```
+combined = [DNA_feat || Protein_feat]
+g = Sigmoid(Linear(combined))           # Gate weight ∈ [0, 1]
+fused = g * DNA_feat + (1 - g) * Protein_feat
+```
+
+**Key Benefits:**
+- Learns sample-specific modality weights (not fixed)
+- g≈1: Trusts DNA more (useful for nucleotide-driven variants)
+- g≈0.5: Balanced trust in both modalities
+- g≈0: Trusts Protein more (useful for protein-consequence variants)
+- More parameter-efficient than concatenation (512 vs 1024 input dims to MLP)
+- Automatically learns which modality is more important per sample
+
+**Gate Analysis & Interpretability:**
+The model automatically generates:
+- Gate value distribution histogram showing modality preferences
+- Identifies "DNA-dependent" variants (g > 0.7)
+- Identifies "Protein-dependent" variants (g < 0.3)
+- Traces samples to original parquet with gate weights for downstream analysis
+
+### 4. **Feature Mode Options**
 
 Flexible feature combinations for each modality:
 - **`feature_mode='all'`** (default): `[E_ref, E_alt, E_alt - E_ref]` → full information
@@ -285,6 +322,7 @@ Edit `config.py` to set defaults:
 MODE = 'both'               # Options: 'dna', 'prot', 'both'
 FUSION_METHOD = 'concat'    # Options: 'concat', 'cross_attn'
 FEATURE_MODE = 'all'        # Options: 'all', 'ref_alt', 'diff', 'ref', 'alt'
+USE_GATING = False          # Enable/disable gated fusion
 
 # ============ MODELS ============
 NT_MODEL = "InstaDeepAI/nucleotide-transformer-500m-human-ref"
@@ -312,50 +350,144 @@ SEED = 42
 
 ### Experiment 1: Baseline (Concatenation + All Features)
 ```bash
-python train.py --exp_name exp_baseline --mode both --fusion_method concat --feature_mode all
+python train.py --exp_name exp_baseline --mode both --fusion_method concat --feature_mode all --use_gating False
 # Standard approach: concatenate DNA and protein, use all features
 ```
 
-### Experiment 2: Cross-Attention Fusion
+### Experiment 2: Gated Fusion Only
 ```bash
-python train.py --exp_name exp_cross_attn --mode both --fusion_method cross_attn --feature_mode all --lr 1e-3
+python train.py --exp_name exp_gated --mode both --fusion_method concat --use_gating True --lr 1e-3
+# Learn adaptive modality weights via gates instead of fixed concatenation
+```
+
+### Experiment 3: Cross-Attention Fusion
+```bash
+python train.py --exp_name exp_cross_attn --mode both --fusion_method cross_attn --feature_mode all --use_gating False --lr 1e-3
 # Advanced fusion: DNA and protein attend to each other
 ```
 
-### Experiment 3: Difference Features Only
+### Experiment 4: Cross-Attention + Gated Fusion
 ```bash
-python train.py --exp_name exp_diff_only --mode both --feature_mode diff --lr 1e-3
-# Use only E_alt - E_ref (capture changes only)
+python train.py --exp_name exp_cross_attn_gated --mode both --fusion_method cross_attn --use_gating True --lr 1e-3
+# Combine cross-attention interaction + gated modality weighting
 ```
 
-### Experiment 4: DNA Modality Ablation
+### Experiment 5: Gated Fusion with Difference Features
 ```bash
-python train.py --exp_name exp_dna_only --mode dna --lr 1e-3
-# Test DNA contribution alone
+python train.py --exp_name exp_gated_diff --mode both --feature_mode diff --use_gating True --lr 1e-3
+# Use only change information (E_alt - E_ref) + gated fusion
 ```
 
-### Experiment 5: Protein Modality Ablation
+### Experiment 6: Cross-Attention + Gated + Diff Features
 ```bash
-python train.py --exp_name exp_prot_only --mode prot --lr 1e-3
-# Test protein contribution alone
-```
-
-### Experiment 6: Combined Advanced Features
-```bash
-python train.py --exp_name exp_advanced \
-  --mode both \
+python train.py --exp_name exp_cross_attn_gated_diff \
   --fusion_method cross_attn \
+  --use_gating True \
   --feature_mode diff \
   --lr 5e-4 \
   --dropout 0.3 \
   --weight_decay 1e-4
-# Cross-attention + difference features + stronger regularization
+# Full advanced setup: combines all advanced techniques
+```
+
+### Experiment 7: DNA-Only (Ablation)
+```bash
+python train.py --exp_name exp_dna_only --mode dna --lr 1e-3
+# Test DNA modality contribution alone
+```
+
+### Experiment 8: Protein-Only (Ablation)
+```bash
+python train.py --exp_name exp_prot_only --mode prot --lr 1e-3
+# Test protein modality contribution alone
 ```
 
 ### Compare Experiments in TensorBoard:
 ```bash
 tensorboard --logdir runs
 # HPARAMS tab → Select multiple experiments → Parallel coordinates plot
+```
+
+## 📈 Advanced Features Reference
+
+### GatingMechanism Class (NEW)
+
+```python
+class GatingMechanism(nn.Module):
+    """Learn sample-specific modality weighting via sigmoid gates."""
+    
+    def __init__(self, dim):
+        self.gate = nn.Sequential(
+            nn.Linear(dim * 2, dim),      # Combine both modalities
+            nn.Sigmoid()                   # Output gate ∈ [0, 1]
+        )
+    
+    def forward(self, dna_feat, prot_feat):
+        combined = torch.cat([dna_feat, prot_feat], dim=-1)
+        g = self.gate(combined)            # [batch, proj_dim]
+        fused = g * dna_feat + (1 - g) * prot_feat
+        return fused
+```
+
+**How it works:**
+- Takes concatenated DNA and Protein features
+- Learns a gate value per dimension
+- Performs element-wise weighted combination
+- Each sample gets its own adaptive weights (not fixed)
+- More interpretable than concat: can analyze which modality wins per sample
+
+### analyze_gating_behavior() Function (NEW)
+
+Automatically analyzes gate distributions on test set:
+
+```python
+def analyze_gating_behavior(model, loader, device):
+    # Extract gate values for all test samples
+    # Generates histogram of gate distribution
+    # Identifies DNA-dependent vs Protein-dependent variants
+    # Returns: gate_values, labels, predictions
+```
+
+**Output includes:**
+1. **Gate Distribution Plot**: Shows how many variants rely on each modality
+2. **DNA-Dependent Count**: Number of variants with g > 0.7 (DNA-heavy)
+3. **Protein-Dependent Count**: Number of variants with g < 0.3 (Protein-heavy)
+
+### trace_samples_to_parquet() Function (NEW)
+
+Traces analyzed samples back to original data:
+
+```python
+def trace_samples_to_parquet(test_parquet_path, all_gates, all_labels, all_preds, threshold=0.6):
+    # Merges gate analysis with original variant information
+    # Creates interpretable output with: CHROM, POS, REF, ALT, gate_weight, label, correctness
+    # Enables downstream analysis of "why did the model make this prediction?"
+```
+
+**Output parquet includes:**
+- `gate_dna_weight`: How much model trusted DNA (0 to 1)
+- `true_label`: Ground truth pathogenicity
+- `pred_score`: Predicted probability
+- `is_correct`: Whether prediction matches ground truth
+- All original variant info: CHROM, POS, REF, ALT, sequences
+
+### FusionClassifier with Gating
+
+In forward pass, when `use_gating=True`:
+```python
+# After cross-attention (if enabled)
+dna_f, prot_f = ...  # [batch, proj_dim] each
+
+# Gated fusion
+combined = torch.cat([dna_f, prot_f], dim=-1)
+g = self.gater.gate(combined)  # [batch, proj_dim]
+fused = g * dna_f + (1 - g) * prot_f
+
+logits = self.classifier(fused)
+
+# Return gates for analysis
+if return_gates:
+    return logits, g.mean(dim=-1)  # Average gate across dimensions
 ```
 
 ## 📈 Metrics
@@ -450,8 +582,7 @@ Benefits:
 |-----------|------|---------|-------------|
 | `mode` | str | 'both' | 'dna', 'prot', or 'both' - which modalities to use |
 | `fusion_method` | str | 'concat' | 'concat' or 'cross_attn' - how to combine modalities |
-| `feature_mode` | str | 'all' | 'all', 'ref_alt', 'diff', 'ref', 'alt' - feature combination |
-| `proj_dim` | int | 512 | Projection dimension for each modality |
+| `feature_mode` | str | 'all' | 'all', 'ref_alt', 'diff', 'ref', 'alt' - feature combination || `use_gating` | bool | False | Enable gated fusion for adaptive modality weighting || `proj_dim` | int | 512 | Projection dimension for each modality |
 | `fusion_hidden` | list | [512, 256] | MLP hidden layer dimensions |
 | `dropout` | float | 0.2 | Dropout rate (0.0-1.0) |
 | `weight_decay` | float | 1e-4 | L2 regularization strength |
