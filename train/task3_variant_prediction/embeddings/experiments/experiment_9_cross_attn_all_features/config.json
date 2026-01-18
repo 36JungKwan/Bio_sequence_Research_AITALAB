@@ -1,0 +1,19 @@
+{
+  "exp_name": "experiment_9_cross_attn_all_features",
+  "timestamp": "2026-01-18T15:51:19.061020",
+  "mode": "both",
+  "fusion_method": "cross_attn",
+  "feature_mode": "all",
+  "lr": 0.0001,
+  "epochs": 30,
+  "batch_size": 128,
+  "patience": 5,
+  "dropout": 0.3,
+  "seed": 42,
+  "proj_dim": 512,
+  "fusion_hidden": [
+    512,
+    256
+  ],
+  "log_dir": "runs\\experiment_9_cross_attn_all_features"
+}

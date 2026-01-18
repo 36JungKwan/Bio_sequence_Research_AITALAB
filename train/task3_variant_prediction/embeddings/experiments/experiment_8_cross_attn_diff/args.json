@@ -1,0 +1,19 @@
+{
+  "mode": "both",
+  "fusion_method": "cross_attn",
+  "feature_mode": "diff",
+  "proj_dim": 512,
+  "fusion_hidden": [
+    512,
+    256
+  ],
+  "lr": 0.0001,
+  "epochs": 30,
+  "batch_size": 128,
+  "patience": 5,
+  "dropout": 0.3,
+  "weight_decay": 0.0001,
+  "seed": 42,
+  "exp_name": "experiment_8_cross_attn_diff",
+  "log_dir": "runs\\experiment_8_cross_attn_diff"
+}

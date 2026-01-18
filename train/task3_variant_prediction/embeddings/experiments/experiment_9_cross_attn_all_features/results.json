@@ -1,0 +1,28 @@
+{
+  "exp_name": "experiment_9_cross_attn_all_features",
+  "timestamp": "2026-01-18T15:52:35.059042",
+  "best_val_loss": 0.15611318571774835,
+  "test_results": {
+    "acc": 0.9364314079284668,
+    "auc": 0.9329118728637695,
+    "balanced_acc": 0.9329118728637695,
+    "f1_macro": 0.9348806142807007,
+    "mcc": 0.8702767491340637,
+    "precision": 0.94291752576828,
+    "recall": 0.9074262380599976,
+    "specificity": 0.9583975076675415,
+    "loss": 0.16854028963226236
+  },
+  "epochs_trained": 7,
+  "hparams": {
+    "mode": "both",
+    "fusion_method": "cross_attn",
+    "feature_mode": "all",
+    "lr": 0.0001,
+    "dropout": 0.3,
+    "batch_size": 128,
+    "proj_dim": 512,
+    "fusion_hidden": "[512, 256]",
+    "patience": 5
+  }
+}

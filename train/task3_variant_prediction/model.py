@@ -4,10 +4,10 @@ import torch.nn as nn
 
 class CrossAttentionBlock(nn.Module):
     def __init__(self, dim, num_heads=4, dropout=0.1):
-        super.__init__()
+        super().__init__()
         self.attn = nn.MultiheadAttention(embed_dim=dim, num_heads=num_heads, dropout=dropout)
         self.norm = nn.LayerNorm(dim)
-    def foward(self, x, context):
+    def forward(self, x, context):
         # x: [batch, dim] -> [batch, 1, dim] (to fit MultiheadAttention)
         x_q = x.unsqueeze(1)
         c_kv = context.unsqueeze(1)
@@ -54,7 +54,8 @@ class FusionClassifier(nn.Module):
     def __init__(self, dna_dim, prot_dim, proj_dim, hidden_dims, dropout, mode='both', fusion_method='concat', feature_mode='all'):
         super().__init__()
         self.mode = mode
-        self.fusion_mode = fusion_method
+        self.fusion_method = fusion_method
+        self.feature_mode = feature_mode
 
         if mode == 'dna' or mode == 'both':
             self.dna_proj = ModalityProjector(dna_dim, proj_dim, dropout, feature_mode)
