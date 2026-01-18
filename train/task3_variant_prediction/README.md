@@ -1,16 +1,16 @@
 # Task 3: Variant-Level Pathogenicity Prediction
 
-Multi-modal fusion model để dự đoán tính gây bệnh (Pathogenicity) của biến thể gen sử dụng embedding từ Nucleotide Transformer (NT) và ESM-2.
+Multi-modal fusion model to predict pathogenicity of genetic variants using embeddings from Nucleotide Transformer (NT) and ESM-2.
 
-## 📋 Tổng quan
+## 📋 Overview
 
-Pipeline này thực hiện:
-1. **Data Preparation**: Split ClinVar variants theo chromosome (chr20/21 làm test)
-2. **Embedding Extraction**: Trích embedding từ NT (DNA) và ESM-2 (Protein) - **zero-shot** (chưa fine-tune)
-3. **Multi-modal Fusion**: Kết hợp DNA + Protein embeddings để dự đoán Pathogenic vs Benign
-4. **Experiment Tracking**: Tự động lưu config, results, và model checkpoints cho mỗi experiment
+This pipeline performs:
+1. **Data Preparation**: Split ClinVar variants by chromosome (chr20/21 as test set)
+2. **Embedding Extraction**: Extract embeddings from NT (DNA) and ESM-2 (Protein) (pre-trained, not fine-tuned)
+3. **Multi-modal Fusion**: Combine DNA + Protein embeddings to predict Pathogenic vs Benign
+4. **Experiment Tracking**: Automatically save config, results, and model checkpoints for each experiment
 
-## 🏗️ Kiến trúc Model
+## 🏗️ Model Architecture
 
 ```
 Input Variants (ClinVar)
@@ -25,54 +25,54 @@ Concatenate DNA + Protein → MLP Classifier
 Pathogenicity Score (Pathogenic=1, Benign=0)
 ```
 
-## 📁 Cấu trúc Thư mục
+## 📁 Directory Structure
 
 ```
 task3_variant_prediction/
-├── config.py                    # Cấu hình hyperparameters
-├── split_data.py                # Split parquet theo chromosome
-├── precompute_embeddings.py     # Trích embedding NT + ESM-2
+├── config.py                    # Hyperparameter configuration
+├── split_data.py                # Split parquet by chromosome
+├── precompute_embeddings.py     # Extract NT + ESM-2 embeddings
 ├── dataset.py                  # PyTorch Dataset loader
 ├── model.py                     # FusionClassifier model
-├── train.py                     # Training script với experiment tracking
-├── main.ipynb                   # Notebook để chạy toàn bộ pipeline
-├── README.md                    # File này
+├── train.py                     # Training script with experiment tracking
+├── main.ipynb                   # Notebook to run full pipeline
+├── README.md                    # This file
 │
-├── data/                        # Split data (tự động tạo)
+├── data/                        # Split data (auto-generated)
 │   ├── train.parquet
 │   ├── val.parquet
 │   └── test.parquet
 │
-├── embeddings/                   # Precomputed embeddings (tự động tạo)
+├── embeddings/                   # Precomputed embeddings (auto-generated)
 │   ├── train_embeddings.pt
 │   ├── val_embeddings.pt
 │   ├── test_embeddings.pt
 │   ├── best_fusion_model.pt     # Global best model
-│   └── experiments/             # Tất cả experiments
-│       ├── baseline_v1/
+│   └── experiments/             # All experiments
+│       ├── experiment_1/
 │       │   ├── config.json      # Config snapshot
-│       │   ├── config.py         # Copy của config.py
-│       │   ├── args.json         # Arguments đã dùng
+│       │   ├── config.py         # Copy of config.py
+│       │   ├── args.json         # Arguments used
 │       │   ├── results.json      # Test results
 │       │   ├── best_model.pt     # Model checkpoint
 │       │   └── tensorboard/      # TensorBoard logs
 │       └── ...
 │
 └── runs/                        # TensorBoard logs
-    ├── baseline_v1/
+    ├── experiment_1/
     └── ...
 ```
 
-## 🚀 Cài đặt
+## 🚀 Installation
 
-### Yêu cầu
+### Requirements
 
 - Python 3.8+
-- PyTorch (với CUDA nếu có GPU)
+- PyTorch (with CUDA if GPU available)
 - Transformers (HuggingFace)
-- Các packages khác: `pandas`, `numpy`, `torchmetrics`, `tensorboard`, `tqdm`, `seaborn`, `matplotlib`
+- Other packages: `pandas`, `numpy`, `torchmetrics`, `tensorboard`, `tqdm`, `seaborn`, `matplotlib`
 
-### Cài đặt dependencies
+### Install Dependencies
 
 ```bash
 pip install torch torchvision torchaudio
@@ -80,11 +80,11 @@ pip install transformers
 pip install pandas numpy torchmetrics tensorboard tqdm seaborn matplotlib
 ```
 
-## 📖 Hướng dẫn Sử dụng
+## 📖 Usage Guide
 
-### Cách 1: Sử dụng Notebook (Khuyến nghị)
+### Method 1: Using Notebook (Recommended)
 
-1. **Mở `main.ipynb`** và chạy tuần tự các cells:
+1. **Open `main.ipynb`** and run cells sequentially:
 
    **Cell 1-2: Split Data**
    ```python
@@ -92,8 +92,8 @@ pip install pandas numpy torchmetrics tensorboard tqdm seaborn matplotlib
    from config import RAW_PARQUET
    split_main(RAW_PARQUET)
    ```
-   - Lọc chỉ giữ `Pathogenic` và `Benign` variants
-   - Split: chr20/21 → test, còn lại → train/val (15% val)
+   - Filter to keep only `Pathogenic` and `Benign` variants
+   - Split: chr20/21 → test, rest → train/val (15% val)
 
    **Cell 3-4: Precompute Embeddings**
    ```python
@@ -101,223 +101,366 @@ pip install pandas numpy torchmetrics tensorboard tqdm seaborn matplotlib
    from precompute_embeddings import main as emb_main
    emb_main()
    ```
-   - Trích embedding từ NT (DNA) và ESM-2 (Protein)
-   - Lưu vào `.pt` files (có thể mất vài phút/giờ tùy GPU)
+   - Extract embeddings from NT (DNA) and ESM-2 (Protein)
+   - Save to `.pt` files (may take several minutes/hours depending on GPU)
 
    **Cell 5-6: Train Model**
    ```python
    from train import train
-   from config import LR, EPOCHS, BATCH_SIZE, PATIENCE, DROPOUT, SEED
    import argparse
 
    parser = argparse.ArgumentParser()
-   parser.add_argument("--lr", type=float, default=LR)
-   parser.add_argument("--epochs", type=int, default=EPOCHS)
-   parser.add_argument("--batch_size", type=int, default=BATCH_SIZE)
-   parser.add_argument("--patience", type=int, default=PATIENCE)
-   parser.add_argument("--dropout", type=float, default=DROPOUT)
-   parser.add_argument("--seed", type=int, default=SEED)
-   parser.add_argument("--exp_name", type=str, default="baseline_v1")
-   parser.add_argument("--log_dir", type=str, default=None)
-
+   
+   # Fusion & modality options
+   parser.add_argument("--mode", type=str, default="both", choices=['dna', 'prot', 'both'])
+   parser.add_argument("--fusion_method", type=str, default="concat", choices=['concat', 'cross_attn'])
+   parser.add_argument("--feature_mode", type=str, default="all", choices=['all', 'ref_alt', 'diff', 'ref', 'alt'])
+   
+   # Hyperparameters
+   parser.add_argument("--lr", type=float, default=1e-3)
+   parser.add_argument("--epochs", type=int, default=30)
+   parser.add_argument("--batch_size", type=int, default=128)
+   parser.add_argument("--dropout", type=float, default=0.2)
+   parser.add_argument("--weight_decay", type=float, default=1e-4)
+   
+   # Experiment setup
+   parser.add_argument("--exp_name", type=str, default="experiment_1")
+   parser.add_argument("--seed", type=int, default=42)
+   
    args = parser.parse_args([])
    result = train(args)
    ```
 
-   **Cell 7-8: Xem lại Experiments**
-   - Xem danh sách tất cả experiments
-   - Xem chi tiết một experiment cụ thể
+   **Cell 7-8: View Experiments**
+   - List all experiments
+   - View details of specific experiment
 
-### Cách 2: Sử dụng Command Line
+### Method 2: Using Command Line
 
 ```bash
 # 1. Split data
-python split_data.py --parquet <path_to_parquet>
+python split_data.py
 
 # 2. Precompute embeddings
 python precompute_embeddings.py
 
-# 3. Train với exp_name cụ thể
-python train.py --exp_name baseline_v1 --lr 1e-3 --dropout 0.2
+# 3. Train with default config (concat fusion, all features)
+python train.py --exp_name experiment_1 --lr 1e-3 --dropout 0.2
 
-# 4. Train với exp_name khác, override config
-python train.py --exp_name experiment_v2 --lr 5e-4 --dropout 0.3 --patience 3
+# 4. Train with cross-attention fusion
+python train.py --exp_name experiment_2_cross_attn --fusion_method cross_attn --lr 1e-3
+
+# 5. Train with diff features only
+python train.py --exp_name experiment_3_diff --feature_mode diff --lr 1e-3
+
+# 6. Train DNA-only (ablation)
+python train.py --exp_name experiment_4_dna_only --mode dna --lr 1e-3
+
+# 7. Train Protein-only (ablation)
+python train.py --exp_name experiment_5_prot_only --mode prot --lr 1e-3
+
+# 8. Advanced: Cross-attention + diff features
+python train.py --exp_name experiment_6_cross_attn_diff --fusion_method cross_attn --feature_mode diff --lr 5e-4 --dropout 0.3
 ```
 
-## 🎯 Các Tính năng Chính
+## 🎯 Key Features
 
-### 1. **Auto Experiment Tracking**
+### 1. **Flexible Fusion Modes**
 
-Mỗi lần train, hệ thống tự động:
-- Tạo thư mục `embeddings/experiments/<exp_name>/`
-- Lưu config snapshot (`config.json`)
-- Lưu arguments đã dùng (`args.json`)
-- Lưu test results (`results.json`)
+Choose how to combine modalities:
+- **`mode='both'`** (default): Use both DNA and Protein embeddings
+- **`mode='dna'`**: DNA-only predictions
+- **`mode='prot'`**: Protein-only predictions
+
+Useful for ablation studies to understand modality contributions.
+
+### 2. **Multiple Fusion Methods**
+
+Control how modalities are combined:
+- **`fusion_method='concat'`** (default): Simple concatenation → MLP
+- **`fusion_method='cross_attn'`**: Cross-attention blocks to capture modality interactions
+  - DNA attends to Protein features
+  - Protein attends to DNA features
+  - Better captures synergistic effects
+
+### 3. **Feature Mode Options**
+
+Flexible feature combinations for each modality:
+- **`feature_mode='all'`** (default): `[E_ref, E_alt, E_alt - E_ref]` → full information
+- **`feature_mode='ref_alt'`**: `[E_ref, E_alt]` → reference and alternative
+- **`feature_mode='diff'`**: `E_alt - E_ref` → only change/difference
+- **`feature_mode='ref'`**: `E_ref` → only reference
+- **`feature_mode='alt'`**: `E_alt` → only alternative
+
+### 4. **Auto Experiment Tracking**
+
+Each training run automatically:
+- Create directory `embeddings/experiments/<exp_name>/`
+- Save config snapshot (`config.json`)
+- Save used arguments (`args.json`)
+- Save test results (`results.json`)
 - Copy model checkpoint (`best_model.pt`)
 - Copy TensorBoard logs
 
-### 2. **Experiment Naming**
+### 5. **Comprehensive Metrics Tracking**
 
-- **Có thể đặt tên**: `--exp_name baseline_v1`
-- **Tự động tạo**: Nếu không có, tạo theo timestamp `exp_20241201_143022`
+Real-time monitoring with TensorBoard:
+- **Loss curves**: Training vs Validation
+- **Classification metrics**: Accuracy, Precision, Recall, F1, MCC, AUC
+- **Confusion matrices**: Visualized per epoch
+- **Gradient norms**: Model training stability
+- **HPARAMS dashboard**: Compare experiments with different hyperparameters
 
-### 3. **Configuration Management**
+### 6. **Multi-modal Fusion with Cross-Attention**
 
-- Tất cả hyperparameters trong `config.py`
-- Có thể override từ command line hoặc notebook
-- Mỗi experiment lưu snapshot config để reproduce
-
-### 4. **TensorBoard Integration**
-
-- Tự động log: loss, metrics, confusion matrices
-- HPARAMS tab: So sánh hyperparameters và metrics giữa experiments
-- Xem: `tensorboard --logdir runs`
-
-### 5. **Multi-modal Fusion**
-
-- **DNA Branch**: NT embedding cho `ref_seq` và `alt_seq` (601bp, center token)
-- **Protein Branch**: ESM-2 embedding cho `prot_ref_seq` và `prot_alt_seq` (101aa, center token)
-- **Fusion**: `[E_ref, E_alt, E_alt - E_ref]` per modality → Concatenate → MLP
-
-## 📊 Xem lại Kết quả
-
-### 1. Trong Notebook
-
-**Xem danh sách tất cả experiments:**
-```python
-# Cell 8 trong main.ipynb
-# Hiển thị bảng: exp_name | timestamp | test_auc | test_acc | test_mcc | ...
+Advanced fusion mechanism:
+```
+DNA Embedding (proj_dim=512)
+    ↓
+Cross-Attention Block: DNA attends to Protein
+    ↓
+Protein Embedding (proj_dim=512)
+    ↓
+Cross-Attention Block: Protein attends to DNA
+    ↓
+Concatenate → MLP Classifier
 ```
 
-**Xem chi tiết một experiment:**
+### 7. **Modality Projector with Feature Engineering**
+
+Each modality uses a `ModalityProjector`:
+- Projects embeddings to shared dimension space
+- Supports different feature combinations (ref/alt/diff)
+- LayerNorm + GELU activation for better representation
+
+## 📊 View Results
+
+### 1. In Notebook
+
+**View list of all experiments:**
 ```python
-# Cell 9 trong main.ipynb
-exp_name = "baseline_v1"  # Thay bằng exp_name bạn muốn
-# Hiển thị config và results chi tiết
+# Cell 8 in main.ipynb
+# Display table: exp_name | timestamp | test_auc | test_acc | test_mcc | ...
+```
+
+**View details of specific experiment:**
+```python
+# Cell 9 in main.ipynb
+exp_name = "experiment_1"  # Change to your exp_name
+# Display config and detailed results
 ```
 
 ### 2. TensorBoard
 
 ```bash
-# Xem tất cả experiments
+# View all experiments
 tensorboard --logdir train/task3_variant_prediction/runs
 
-# Trong TensorBoard:
+# In TensorBoard:
 # - SCALARS: Loss/metrics curves
-# - HPARAMS: So sánh hyperparameters và metrics
+# - HPARAMS: Compare hyperparameters and metrics
 # - IMAGES: Confusion matrices
 ```
 
-### 3. Đọc File JSON
+### 3. Read JSON Files
 
 ```python
 import json
 
-# Đọc config
-with open("embeddings/experiments/baseline_v1/config.json", "r") as f:
+# Read config
+with open("embeddings/experiments/experiment_1/config.json", "r") as f:
     config = json.load(f)
 
-# Đọc results
-with open("embeddings/experiments/baseline_v1/results.json", "r") as f:
+# Read results
+with open("embeddings/experiments/experiment_1/results.json", "r") as f:
     results = json.load(f)
 ```
 
-## 🔧 Cấu hình
+## 🔧 Configuration
 
-Chỉnh sửa `config.py` để thay đổi:
+Edit `config.py` to set defaults:
 
 ```python
-# Models
+# ============ MODALITY OPTIONS ============
+MODE = 'both'               # Options: 'dna', 'prot', 'both'
+FUSION_METHOD = 'concat'    # Options: 'concat', 'cross_attn'
+FEATURE_MODE = 'all'        # Options: 'all', 'ref_alt', 'diff', 'ref', 'alt'
+
+# ============ MODELS ============
 NT_MODEL = "InstaDeepAI/nucleotide-transformer-500m-human-ref"
 ESM_MODEL = "facebook/esm2_t33_650M_UR50D"
 
-# Sequence lengths
-DNA_SEQ_LEN = 601
-PROT_SEQ_LEN = 101
-
-# Training hyperparameters
-PROJ_DIM = 512
-FUSION_HIDDEN = [512, 256]
+# ============ ARCHITECTURE ============
+PROJ_DIM = 512              # Projection dimension for each modality
+FUSION_HIDDEN = [512, 256]  # MLP hidden layer sizes
 DROPOUT = 0.2
+
+# ============ TRAINING ============
 LR = 1e-3
 EPOCHS = 30
 PATIENCE = 5
 BATCH_SIZE = 128
+WEIGHT_DECAY = 1e-4         # L2 regularization
 
-# Data split
-TEST_CHROMS = {"chr20", "chr21", "20", "21"}
+# ============ DATA ============
+TEST_CHROMS = {"chr20", "chr21"}
 VAL_RATIO = 0.15
+SEED = 42
 ```
 
-## 📝 Ví dụ Workflow
+## 📝 Example Experiments
 
-### Experiment 1: Baseline
-```python
-parser.add_argument("--exp_name", type=str, default="baseline_v1")
-# Kết quả: AUC=0.9850, Acc=0.9397
+### Experiment 1: Baseline (Concatenation + All Features)
+```bash
+python train.py --exp_name exp_baseline --mode both --fusion_method concat --feature_mode all
+# Standard approach: concatenate DNA and protein, use all features
 ```
 
-### Experiment 2: Tăng Dropout (giảm overfitting)
-```python
-parser.add_argument("--exp_name", type=str, default="baseline_v2_dropout03")
-parser.add_argument("--dropout", type=float, default=0.3)
-# So sánh với baseline_v1
+### Experiment 2: Cross-Attention Fusion
+```bash
+python train.py --exp_name exp_cross_attn --mode both --fusion_method cross_attn --feature_mode all --lr 1e-3
+# Advanced fusion: DNA and protein attend to each other
 ```
 
-### Experiment 3: Giảm Learning Rate
-```python
-parser.add_argument("--exp_name", type=str, default="baseline_v3_lr5e4")
-parser.add_argument("--lr", type=float, default=5e-4)
-# So sánh với các experiments trước
+### Experiment 3: Difference Features Only
+```bash
+python train.py --exp_name exp_diff_only --mode both --feature_mode diff --lr 1e-3
+# Use only E_alt - E_ref (capture changes only)
 ```
 
-### So sánh trong TensorBoard:
+### Experiment 4: DNA Modality Ablation
+```bash
+python train.py --exp_name exp_dna_only --mode dna --lr 1e-3
+# Test DNA contribution alone
+```
+
+### Experiment 5: Protein Modality Ablation
+```bash
+python train.py --exp_name exp_prot_only --mode prot --lr 1e-3
+# Test protein contribution alone
+```
+
+### Experiment 6: Combined Advanced Features
+```bash
+python train.py --exp_name exp_advanced \
+  --mode both \
+  --fusion_method cross_attn \
+  --feature_mode diff \
+  --lr 5e-4 \
+  --dropout 0.3 \
+  --weight_decay 1e-4
+# Cross-attention + difference features + stronger regularization
+```
+
+### Compare Experiments in TensorBoard:
 ```bash
 tensorboard --logdir runs
-# Tab HPARAMS → Chọn experiments → Parallel coordinates plot
+# HPARAMS tab → Select multiple experiments → Parallel coordinates plot
 ```
 
 ## 📈 Metrics
 
-Model được đánh giá bằng:
+Model is evaluated using:
 - **AUC** (Area Under ROC Curve)
 - **Accuracy**
 - **MCC** (Matthews Correlation Coefficient)
 - **F1 Score** (macro/micro)
 - **Confusion Matrix**
 
-## ⚠️ Lưu ý
+## ⚠️ Important Notes
 
-1. **GPU Memory**: ESM-2 t33_650M cần ~16GB+ VRAM. Nếu thiếu, giảm `PROT_BATCH` trong `config.py`
-2. **Precompute Time**: Trích embedding có thể mất vài giờ tùy số lượng variants và GPU
-3. **Overfitting**: Nếu thấy train loss giảm nhưng val loss tăng → tăng dropout, giảm LR, hoặc thêm regularization
-4. **Data Path**: Cập nhật `RAW_PARQUET` trong `config.py` trước khi chạy
+1. **GPU Memory**: ESM-2 t33_650M requires ~16GB+ VRAM. If memory limited, reduce `PROT_BATCH` in `config.py`
+2. **Precompute Time**: Extracting embeddings may take several hours depending on variant count and GPU
+3. **Overfitting**: If train loss decreases but val loss increases → increase dropout, decrease LR, or add regularization
+4. **Data Path**: Update `RAW_PARQUET` in `config.py` before running
 
 ## 🐛 Troubleshooting
 
-### Lỗi: Out of Memory
-- Giảm `BATCH_SIZE` trong `config.py`
-- Giảm `PROT_BATCH` (cho ESM-2)
-- Giảm `DNA_BATCH` (cho NT)
+### Error: Out of Memory
+- Reduce `BATCH_SIZE` in `config.py`
+- Reduce `PROT_BATCH` (for ESM-2)
+- Reduce `DNA_BATCH` (for NT)
 
-### Lỗi: File not found
-- Kiểm tra `RAW_PARQUET` path trong `config.py`
-- Đảm bảo đã chạy `split_data.py` trước `precompute_embeddings.py`
+### Error: File not found
+- Check `RAW_PARQUET` path in `config.py`
+- Ensure `split_data.py` runs before `precompute_embeddings.py`
 
-### Lỗi: CUDA out of memory
-- Giảm batch sizes
-- Dùng CPU: `device = "cpu"` (sẽ chậm hơn nhiều)
+### Error: CUDA out of memory
+- Reduce batch sizes
+- Use CPU: `device = "cpu"` (will be much slower)
 
-## 📚 Tài liệu Tham khảo
+## 📚 Advanced Features Reference
+
+### ModalityProjector Class
+
+```python
+class ModalityProjector(nn.Module):
+    """Projects embeddings to shared dimension with flexible feature modes."""
+    
+    def __init__(self, emb_dim, proj_dim, dropout, feature_mode='all'):
+        # Input dimension depends on feature_mode:
+        # - 'all': emb_dim*3 (ref, alt, diff)
+        # - 'ref_alt': emb_dim*2 (ref, alt)
+        # - 'diff'/'ref'/'alt': emb_dim
+```
+
+Feature engineering per modality:
+- Input: ref & alt embeddings from NT or ESM-2
+- Output: projected feature vector
+- Supports different combinations for flexible ablations
+
+### CrossAttentionBlock
+
+```python
+class CrossAttentionBlock(nn.Module):
+    """Multi-head attention for modality interaction."""
+    
+    def __init__(self, dim, num_heads=4, dropout=0.1):
+        # Captures interactions between modalities
+        # Used in cross_attn fusion method
+```
+
+Benefits:
+- Learns modality-specific representations
+- Captures synergistic effects between DNA and protein
+- More expressive than simple concatenation
+
+### FusionClassifier Architecture
+
+**Concat Mode:**
+```
+[DNA features]     → Projector → [512]
+                                   ├→ Concat → [1024] → MLP → Output
+[Protein features] → Projector → [512]
+                                    
+```
+
+**Cross-Attention Mode:**
+```
+[DNA features]     → Projector → [512]
+                                    ├→ Cross-Attn (DNA attends to Prot)
+[Protein features] → Projector → [512]     ├→ Concat → [1024] → MLP → Output
+                                    ├→ Cross-Attn (Prot attends to DNA)
+                    
+```
+
+## Advanced Model Hyperparameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `mode` | str | 'both' | 'dna', 'prot', or 'both' - which modalities to use |
+| `fusion_method` | str | 'concat' | 'concat' or 'cross_attn' - how to combine modalities |
+| `feature_mode` | str | 'all' | 'all', 'ref_alt', 'diff', 'ref', 'alt' - feature combination |
+| `proj_dim` | int | 512 | Projection dimension for each modality |
+| `fusion_hidden` | list | [512, 256] | MLP hidden layer dimensions |
+| `dropout` | float | 0.2 | Dropout rate (0.0-1.0) |
+| `weight_decay` | float | 1e-4 | L2 regularization strength |
+| `lr` | float | 1e-3 | Learning rate |
+| `batch_size` | int | 128 | Training batch size |
+
+## 📚 References
 
 - **Nucleotide Transformer**: [InstaDeepAI/nucleotide-transformer](https://huggingface.co/InstaDeepAI/nucleotide-transformer-500m-human-ref)
 - **ESM-2**: [facebook/esm2](https://huggingface.co/facebook/esm2_t33_650M_UR50D)
 - **ClinVar**: [NCBI ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/)
-
-## 📄 License
-
-Xem LICENSE file trong repository chính.
-
----
-
-**Tác giả**: Bio Sequence Research Team  
+- **Multi-Head Attention**: [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
