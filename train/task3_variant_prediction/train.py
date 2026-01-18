@@ -1,6 +1,7 @@
 import os
 import random
 import numpy as np
+import pandas as pd
 import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -363,7 +364,7 @@ def train(args):
 
     print("\n--- TOP 5 SAMPLES PRIORITIZING DNA ---")
     # Hiển thị các cột quan trọng (tùy vào các cột trong file parquet của bạn)
-    cols_to_show = ['chrom', 'pos', 'ref', 'alt', 'gate_dna_weight', 'true_label', 'is_correct']
+    cols_to_show = ['CHROM', 'POS', 'REF', 'ALT', 'gate_dna_weight', 'true_label', 'is_correct']
     print(dna_samples[cols_to_show].head(5))
 
     # Lưu lại để làm báo cáo

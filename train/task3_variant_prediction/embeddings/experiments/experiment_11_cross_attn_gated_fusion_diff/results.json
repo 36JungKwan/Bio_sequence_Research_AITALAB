@@ -1,0 +1,29 @@
+{
+  "exp_name": "experiment_11_cross_attn_gated_fusion_diff",
+  "timestamp": "2026-01-18T17:20:36.037229",
+  "best_val_loss": 0.1550823483919937,
+  "test_results": {
+    "acc": 0.9364314079284668,
+    "auc": 0.9342079162597656,
+    "balanced_acc": 0.9342079758644104,
+    "f1_macro": 0.9350639581680298,
+    "mcc": 0.870223879814148,
+    "precision": 0.9332988858222961,
+    "recall": 0.918107807636261,
+    "specificity": 0.9503081440925598,
+    "loss": 0.1643994603680054
+  },
+  "epochs_trained": 6,
+  "hparams": {
+    "mode": "both",
+    "fusion_method": "cross_attn",
+    "use_gating": true,
+    "feature_mode": "diff",
+    "lr": 0.0001,
+    "dropout": 0.3,
+    "batch_size": 128,
+    "proj_dim": 512,
+    "fusion_hidden": "[512, 256]",
+    "patience": 5
+  }
+}
