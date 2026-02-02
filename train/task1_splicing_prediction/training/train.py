@@ -186,7 +186,7 @@ def main(args):
     
     # Print detailed configuration
     print(f"\n{'='*70}")
-    print(f"🔬 EXPERIMENT {exp_num}: SPLICING PREDICTION TRAINING")
+    print(f"EXPERIMENT {exp_num}: SPLICING PREDICTION TRAINING")
     print(f"{'='*70}")
     print(f"TRAINING CONFIGURATION:")
     print(f"{'='*70}")
@@ -222,14 +222,14 @@ def main(args):
         'seed': args.seed,
     }
     save_experiment_config(exp_dir, args, config_dict)
-    print(f"✅ Configuration saved to {exp_dir}/config.json")
-    print(f"✅ Arguments saved to {exp_dir}/args.json\n")
+    print(f"Configuration saved to {exp_dir}/config.json")
+    print(f"Arguments saved to {exp_dir}/args.json\n")
     
     # Train models
     all_results = []
     
     if not os.path.exists(args.data_dir):
-        print(f"❌ Data directory not found: {args.data_dir}")
+        print(f"Data directory not found: {args.data_dir}")
         return
     
     ratio_folders = sorted(os.listdir(args.data_dir))
@@ -241,7 +241,7 @@ def main(args):
         if not os.path.isdir(ratio_path):
             continue
         
-        print(f"\n📊 Processing {ratio_folder}:")
+        print(f"\nProcessing {ratio_folder}:")
         
         set_folders = sorted(os.listdir(ratio_path))
         if args.set:
@@ -276,13 +276,13 @@ def main(args):
     
     # Summary
     print(f"\n{'='*70}")
-    print(f"✅ EXPERIMENT {exp_num} COMPLETED!")
+    print(f"EXPERIMENT {exp_num} COMPLETED!")
     print(f"{'='*70}")
-    print(f"📁 Results saved to: {exp_dir}")
-    print(f"📈 Models saved in each set directory")
-    print(f"📊 Metrics and results saved as JSON")
-    print(f"📋 Model summaries saved as .txt files")
-    print(f"📉 Confusion matrices visualized in TensorBoard")
-    print(f"\n💡 To view TensorBoard logs:")
+    print(f"Results saved to: {exp_dir}")
+    print(f"Models saved in each set directory")
+    print(f"Metrics and results saved as JSON")
+    print(f"Model summaries saved as .txt files")
+    print(f"Confusion matrices visualized in TensorBoard")
+    print(f"\nTo view TensorBoard logs:")
     print(f"   tensorboard --logdir {os.path.join(exp_dir, 'ratio_*', 'set_*', 'tensorboard')}")
     print(f"{'='*70}\n")

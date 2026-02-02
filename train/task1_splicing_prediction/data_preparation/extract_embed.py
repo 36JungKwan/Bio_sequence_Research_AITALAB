@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, AutoModel
 
 NT_MODEL = "InstaDeepAI/nucleotide-transformer-500m-human-ref"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-SEQ_COLUMN = "ref_seq"  
+SEQ_COLUMN = "sequence"  
 LABEL_COLUMN = 'Splicing_types' 
 MAX_LENGTH = 128         
 BATCH_SIZE = 64
@@ -68,18 +68,38 @@ def process_csv_embedding(csv_path, tokenizer, model, device, replace=False):
 
     # Save dictionary
     data_dict = {
-        "embeddings": embeddings.cpu(), # Tensor [N, Hidden_Dim]
-        "labels": labels.cpu()          # Tensor [N]
+        "embeddings": embeddings.cpu().detach(), # Tensor [N, Hidden_Dim]
+        "labels": labels.cpu().detach()          # Tensor [N]
     }
 
     save_path = csv_path.replace(".csv", "_embeddings.pt")
-    torch.save(data_dict, save_path)
-    print(f"[saved] {save_path}")
+    
+    # Try saving with error handling and alternative methods
+    try:
+        torch.save(data_dict, save_path)
+        print(f"[saved] {save_path}")
+    except RuntimeError as e:
+        print(f"[error] torch.save failed: {e}")
+        print(f"[info] Retrying with pickle format...")
+        try:
+            # Alternative: Save using pickle with protocol 4
+            import pickle
+            save_path_pkl = save_path.replace(".pt", ".pkl")
+            with open(save_path_pkl, 'wb') as f:
+                pickle.dump(data_dict, f, protocol=4)
+            print(f"[saved] {save_path_pkl}")
+            save_path = save_path_pkl
+        except Exception as e2:
+            print(f"[error] Pickle save also failed: {e2}")
+            return None
 
     # delete original CSV if REPLACE=True
     if replace==True:
-        os.remove(csv_path)
-        print(f"[deleted] {csv_path}")
+        try:
+            os.remove(csv_path)
+            print(f"[deleted] {csv_path}")
+        except Exception as e:
+            print(f"[warning] Could not delete CSV: {e}")
 
     return save_path
 

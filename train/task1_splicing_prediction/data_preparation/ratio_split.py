@@ -33,7 +33,7 @@ def create_ratios_keep_all_pos(df, splice_col, chrom_col):
     print("Available:\n Class 0:", len(neg), "\nClass 1,", len(one), "\nClass 2,", len(two))
 
     ratios = {
-        "10_1_1": (10, 1, 1),
+        "9_1_1": (9, 1, 1),
         "4_1_1":  (4, 1, 1),
         "2_1_1":  (2, 1, 1),
         "1_1_1":  (1, 1, 1)

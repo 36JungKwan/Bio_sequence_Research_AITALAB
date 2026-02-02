@@ -1,0 +1,15 @@
+{
+  "batch_size": 128,
+  "lr": 0.001,
+  "weight_decay": 0.0001,
+  "epochs": 50,
+  "patience": 7,
+  "dropout": 0.3,
+  "device": "cuda",
+  "seed": 42,
+  "data_dir": "D:\\Bio_sequence_Research_AITALAB\\train\\task1_splicing_prediction\\data_preparation\\train_val",
+  "save_root": "d:\\Bio_sequence_Research_AITALAB\\train\\task1_splicing_prediction\\training\\trained_models",
+  "exp_num": null,
+  "ratio": null,
+  "set": null
+}

@@ -89,10 +89,15 @@ def compute_metrics(labels, preds, probs=None):
     # AUC (One-vs-Rest for multi-class)
     try:
         if probs is not None:
-            auc = roc_auc_score(labels, np.array(probs), multi_class='ovr', zero_division=0)
+            probs_array = np.array(probs)
+            # Ensure probs is properly shaped [n_samples, n_classes]
+            if len(probs_array.shape) == 1:
+                probs_array = probs_array.reshape(-1, 1)
+            auc = roc_auc_score(labels, probs_array, multi_class='ovr')
         else:
             auc = 0.0
-    except:
+    except Exception as e:
+        print(f"Warning: Could not compute AUC: {e}")
         auc = 0.0
     
     # Balanced Accuracy

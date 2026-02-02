@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-02-02T02:50:28.639832",
+  "batch_size": 1024,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "epochs": 50,
+  "patience": 7,
+  "dropout": 0.3,
+  "hidden_dims": [
+    512,
+    256
+  ],
+  "num_classes": 3,
+  "embedding_dim": "auto",
+  "device": "cuda",
+  "seed": 42
+}
