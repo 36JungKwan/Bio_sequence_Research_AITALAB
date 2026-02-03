@@ -23,7 +23,7 @@ from model import SpliceSiteClassifier
 from config import HIDDEN_DIMS, DROPOUT, NUM_CLASSES
 from metrics import compute_metrics, get_confusion_matrix
 
-def run_inference_for_set(data_dir, exp_dir, ratio, set_name, device, batch_size=64, save_predictions=True):
+def run_inference_for_set(data_dir, exp_dir, ratio, set_name, device, batch_size=64):
     set_data_folder = os.path.join(data_dir, ratio, set_name)
     if not os.path.isdir(set_data_folder):
         print(f"[skip] Data folder missing: {set_data_folder}")
@@ -111,28 +111,6 @@ def run_inference_for_set(data_dir, exp_dir, ratio, set_name, device, batch_size
     with open(results_path, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2)
     print(f"[saved] {results_path}")
-
-    if save_predictions:
-        # attach predictions to original CSV if exists. If embeddings came from global test file,
-        # prefer the global CSV at data_dir/test.csv; otherwise use per-set test.csv.
-        if used_global:
-            global_test_csv = os.path.join(data_dir, 'test.csv')
-            csv_to_read = global_test_csv if os.path.exists(global_test_csv) else None
-        else:
-            csv_to_read = test_csv if os.path.exists(test_csv) else None
-
-        if csv_to_read:
-            df = pd.read_csv(csv_to_read)
-            df['pred'] = all_preds
-            probs_arr = np.array(all_probs)
-            for c in range(probs_arr.shape[1]):
-                df[f'prob_class_{c}'] = probs_arr[:, c]
-            # Save per-set predictions into the experiment folder
-            save_pred_csv = os.path.join(exp_set_dir, f'test_predictions_{ratio}_{set_name}.csv')
-            df.to_csv(save_pred_csv, index=False)
-            print(f"[saved] {save_pred_csv}")
-        else:
-            print(f"[warning] Could not find a test.csv to attach predictions for {ratio}/{set_name}.")
 
     return results
 
