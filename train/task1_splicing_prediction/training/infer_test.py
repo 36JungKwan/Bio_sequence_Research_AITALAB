@@ -29,13 +29,13 @@ def run_inference_for_set(data_dir, exp_dir, ratio, set_name, device, batch_size
         print(f"[skip] Data folder missing: {set_data_folder}")
         return None
 
-    test_csv = os.path.join(set_data_folder, "test.csv")
-    test_pt = os.path.join(set_data_folder, "test_embeddings.pt")
+    test_csv = os.path.join(set_data_folder, "test_data.csv")
+    test_pt = os.path.join(set_data_folder, "test_data_embeddings.pt")
 
     # Support a single global test.csv/embeddings placed at data_dir
     used_global = False
     if not os.path.exists(test_pt):
-        global_test_pt = os.path.join(data_dir, "test_embeddings.pt")
+        global_test_pt = os.path.join(data_dir, "test_data_embeddings.pt")
         if os.path.exists(global_test_pt):
             test_pt = global_test_pt
             used_global = True
