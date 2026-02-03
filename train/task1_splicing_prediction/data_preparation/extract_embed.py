@@ -133,3 +133,33 @@ def embed_train_val_folder(root, replace=False):
     torch.cuda.empty_cache()
 
     print("[DONE] All embeddings generated.")
+
+
+def embed_test_folder(root, replace=False):
+    """Walk `root` and create embeddings for any `test.csv` files found.
+
+    Saves `*_embeddings.pt` next to each `test.csv`. This keeps test embedding
+    generation centralized in this module (call this before running inference).
+    """
+    print("...Loading Nucleotide Transformer for test embeddings...")
+
+    tokenizer = AutoTokenizer.from_pretrained(NT_MODEL)
+    model = AutoModel.from_pretrained(NT_MODEL).to(DEVICE)
+    model.eval()
+
+    print(f"Device = {DEVICE}")
+    print(f"Root folder = {root}\n")
+
+    for parent, dirs, files in os.walk(root):
+        if "test.csv" in files:
+            print(f"Processing test set: {parent}")
+            test_csv = os.path.join(parent, "test.csv")
+            if os.path.exists(test_csv):
+                process_csv_embedding(test_csv, tokenizer, model, DEVICE, replace=replace)
+            print(f"Finished embedding test set: {parent}\n")
+
+    # cleanup GPU
+    del model
+    torch.cuda.empty_cache()
+
+    print("[DONE] All test embeddings generated.")
