@@ -23,19 +23,19 @@ from model import SpliceSiteClassifier
 from config import HIDDEN_DIMS, DROPOUT, NUM_CLASSES
 from metrics import compute_metrics, get_confusion_matrix
 
-def run_inference_for_set(data_dir, exp_dir, ratio, set_name, device, batch_size=64):
+def run_inference_for_set(data_dir, exp_dir, ratio, set_name, test_data, device, batch_size=64):
     set_data_folder = os.path.join(data_dir, ratio, set_name)
     if not os.path.isdir(set_data_folder):
         print(f"[skip] Data folder missing: {set_data_folder}")
         return None
 
-    test_csv = os.path.join(set_data_folder, "test_data.csv")
-    test_pt = os.path.join(set_data_folder, "test_data_embeddings.pt")
+    test_csv = os.path.join(set_data_folder, test_data)
+    test_pt = os.path.join(set_data_folder, test_data.replace(".csv", "_embeddings.pt"))
 
     # Support a single global test.csv/embeddings placed at data_dir
     used_global = False
     if not os.path.exists(test_pt):
-        global_test_pt = os.path.join(data_dir, "test_data_embeddings.pt")
+        global_test_pt = os.path.join(data_dir, test_data.replace(".csv", "_embeddings.pt"))
         if os.path.exists(global_test_pt):
             test_pt = global_test_pt
             used_global = True
@@ -107,7 +107,7 @@ def run_inference_for_set(data_dir, exp_dir, ratio, set_name, device, batch_size
     }
 
     os.makedirs(exp_set_dir, exist_ok=True)
-    results_path = os.path.join(exp_set_dir, 'test_results.json')
+    results_path = os.path.join(exp_set_dir, test_data.replace(".csv", "_results.json"))
     with open(results_path, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2)
     print(f"[saved] {results_path}")
