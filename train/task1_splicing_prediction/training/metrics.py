@@ -117,7 +117,6 @@ def compute_metrics(labels, preds, probs=None, k=2):
         'auprc': auprc, 
         'top_k_acc': top_k_acc, 
         'balanced_acc': bal_acc,
-        'cm': cm
     }
 
 def get_confusion_matrix(labels, preds):
