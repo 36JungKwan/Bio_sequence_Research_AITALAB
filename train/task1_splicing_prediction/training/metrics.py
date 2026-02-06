@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from torchmetrics import Accuracy, Precision, Recall, F1Score, MatthewsCorrCoef, ConfusionMatrix, Specificity, AveragePrecision
+from torchmetrics import Accuracy, Precision, Recall, F1Score, AUROC, MatthewsCorrCoef, ConfusionMatrix, Specificity, AveragePrecision
 from sklearn.metrics import confusion_matrix, roc_auc_score, balanced_accuracy_score, average_precision_score, top_k_accuracy_score, accuracy_score, precision_score, recall_score, f1_score, matthews_corrcoef
 from sklearn.preprocessing import label_binarize
 
@@ -17,6 +17,7 @@ def create_metrics_collection(num_classes, device, k=2):
     """
     return {
         'accuracy': Accuracy(task='multiclass', num_classes=num_classes, average='macro').to(device),
+        'balanced_acc': Accuracy(task='multiclass', num_classes=num_classes, average='macro').to(device),
         'precision': Precision(task='multiclass', num_classes=num_classes, average='macro').to(device),
         'recall': Recall(task='multiclass', num_classes=num_classes, average='macro').to(device),
         'specificity': Specificity(task='multiclass', num_classes=num_classes, average='macro').to(device),
@@ -24,6 +25,7 @@ def create_metrics_collection(num_classes, device, k=2):
         'mcc': MatthewsCorrCoef(task='multiclass', num_classes=num_classes).to(device),
         'cm': ConfusionMatrix(task='multiclass', num_classes=num_classes).to(device),
         'auprc': AveragePrecision(task='multiclass', num_classes=num_classes, average='macro').to(device),
+        'auc': AUROC(task='multiclass', num_classes=num_classes, average='macro').to(device),
         'top_k_acc': Accuracy(task='multiclass', num_classes=num_classes, top_k=k).to(device),
     }
 
@@ -115,6 +117,7 @@ def compute_metrics(labels, preds, probs=None, k=2):
         'auprc': auprc, 
         'top_k_acc': top_k_acc, 
         'balanced_acc': bal_acc,
+        'cm': cm
     }
 
 def get_confusion_matrix(labels, preds):
