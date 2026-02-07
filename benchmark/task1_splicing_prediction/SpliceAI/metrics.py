@@ -1,52 +1,6 @@
-import torch
 import numpy as np
-from torchmetrics import Accuracy, Precision, Recall, F1Score, AUROC, MatthewsCorrCoef, ConfusionMatrix, Specificity, AveragePrecision
 from sklearn.metrics import confusion_matrix, roc_auc_score, balanced_accuracy_score, average_precision_score, top_k_accuracy_score, accuracy_score, precision_score, recall_score, f1_score, matthews_corrcoef
 from sklearn.preprocessing import label_binarize
-
-def create_metrics_collection(num_classes, device, k=2):
-    """
-    Create a collection of metrics for multi-class classification.
-    
-    Args:
-        num_classes: Number of classes
-        device: Device to run metrics on
-        
-    Returns:
-        Dict of metric objects
-    """
-    return {
-        'accuracy': Accuracy(task='multiclass', num_classes=num_classes, average='macro').to(device),
-        'balanced_acc': Accuracy(task='multiclass', num_classes=num_classes, average='macro').to(device),
-        'precision': Precision(task='multiclass', num_classes=num_classes, average='macro').to(device),
-        'recall': Recall(task='multiclass', num_classes=num_classes, average='macro').to(device),
-        'specificity': Specificity(task='multiclass', num_classes=num_classes, average='macro').to(device),
-        'f1': F1Score(task='multiclass', num_classes=num_classes, average='macro').to(device),
-        'mcc': MatthewsCorrCoef(task='multiclass', num_classes=num_classes).to(device),
-        'cm': ConfusionMatrix(task='multiclass', num_classes=num_classes).to(device),
-        'auprc': AveragePrecision(task='multiclass', num_classes=num_classes, average='macro').to(device),
-        'auc': AUROC(task='multiclass', num_classes=num_classes, average='macro').to(device),
-        'top_k_acc': Accuracy(task='multiclass', num_classes=num_classes, top_k=k).to(device),
-    }
-
-def compute_metrics_batch(logits, labels, metrics_dict):
-    """
-    Update metrics with a batch of predictions.
-    
-    Args:
-        logits: Model output logits [batch_size, num_classes]
-        labels: Ground truth labels [batch_size]
-        metrics_dict: Dictionary of metric objects
-    """
-    probs = torch.softmax(logits, dim=-1)
-    
-    for metric_name, metric in metrics_dict.items():
-        if metric_name == 'cm':
-            metric.update(torch.argmax(probs, dim=-1), labels)
-        elif metric_name == 'top_k_acc':
-            metric.update(logits, labels)
-        else:
-            metric.update(probs, labels)
 
 def compute_metrics(labels, preds, probs=None, k=2):
     """
