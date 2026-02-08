@@ -6,8 +6,8 @@ import time
 from tqdm import tqdm
 
 # --- CẤU HÌNH ---
-GENOME_PATH = r"D:\Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-DATA_FOLDER = r"D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val"
+GENOME_PATH = r"D:\my_project\Bio_paper\Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+DATA_FOLDER = r"D:\my_project\Bio_paper\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val"
 PREPARED_FOLDER = "prepared_data/"
 
 # SPLAM sử dụng cửa sổ 800nt (400nt mỗi bên điểm nối)
@@ -17,65 +17,63 @@ TARGET_LEN = 800 # Tổng độ dài đầu vào cho SPLAM
 def get_sequence_worker(row, fasta_obj):
     try:
         parts = row['id'].split('_')
-        # Giả định ID định dạng: label_chr_pos_strand (ví dụ: 1_chr1_12345_+)
         chrom, pos, strand = parts[1], int(parts[2]), parts[3]
+        label = int(row.get('Splicing_types', 0))
         
-        # Chuyển đổi từ 1-based sang 0-based
-        # Trong sinh học, điểm Donor là nucleotide đầu tiên của Intron (G trong GT)
-        # Điểm Acceptor là nucleotide cuối cùng của Intron (G trong AG)
-        center_pos = pos - 1 
+        # 1-based (CSV) sang 0-based (Python)
+        pos0 = pos - 1 
         
-        # SPLAM lấy 400bp upstream và 400bp downstream
-        # Window: [center-400 : center+400]
-        start = center_pos - CONTEXT
-        end = center_pos + CONTEXT
-        
-        # Trích xuất trình tự từ Genome
-        seq_str = str(fasta_obj[chrom][max(0, start):end]).upper()
-        
-        # Bù 'N' nếu trình tự nằm ngoài biên nhiễm sắc thể
-        if start < 0:
-            seq_str = ("N" * abs(start)) + seq_str
-        if len(seq_str) < TARGET_LEN:
-            seq_str = seq_str + ("N" * (TARGET_LEN - len(seq_str)))
+        # Thiết lập Offset dựa trên loại site
+        # Mục tiêu: Donor GT ở [400:402], Acceptor AG ở [398:400]
+        if label == 1:  # DONOR
+            offset = 400
+        elif label == 2: # ACCEPTOR
+            # Dịch thêm 2bp để đưa AG từ vị trí bị lệch về đúng index 398-399
+            offset = 399
+        else: # Nhãn 0 hoặc mặc định
+            offset = 400
+
+        if strand == '+':
+            start = pos0 - offset
+            end = start + 800
+            seq = str(fasta_obj[chrom][max(0, start):end]).upper()
+        else:
+            # Mạch nghịch: Lấy vùng genome tương ứng rồi Reverse Complement
+            # Để motif giữ đúng vị trí sau khi RC, ta lấy đối xứng qua tâm
+            start = pos0 - (800 - offset - 1)
+            end = pos0 + offset + 1
+            seq = str(fasta_obj[chrom][max(0, start):end]).upper()
+            seq = str(Seq(seq).reverse_complement())
             
-        # Reverse Complement nếu là mạch âm
-        if strand == '-':
-            seq_str = str(Seq(seq_str).reverse_complement())
+        # Đảm bảo độ dài luôn là 800
+        if len(seq) < 800:
+            seq = seq.ljust(800, "N")
+        else:
+            seq = seq[:800]
             
-        return seq_str
+        return seq
     except Exception as e:
-        return "N" * TARGET_LEN
+        return "N" * 800
 
 def diagnose_splice_sites(df, sample_size=5):
-    """Kiểm tra xem GT/AG có nằm đúng vị trí trung tâm (index 400) không"""
-    print(f"\n{'Type':<10} | {'Window at center (400)':<25} | {'Found?'}")
-    print("-" * 65)
-    
+    print(f"\n{'Type':<10} | {'Sequence around Center (397-403)':<30} | {'Status'}")
+    print("-" * 70)
     for label, name in [(1, 'Donor'), (2, 'Acceptor')]:
         samples = df[df['Splicing_types'] == label]
         if len(samples) == 0: continue
-        
-        test_batch = samples.sample(min(sample_size, len(samples)))
-        for _, row in test_batch.iterrows():
+        for _, row in samples.sample(min(sample_size, len(samples))).iterrows():
             seq = row['sequence']
-            
-            # SPLAM center là tại index 400. 
-            # Donor (GT): GT bắt đầu tại 400, 401
-            # Acceptor (AG): AG kết thúc tại 398, 399
-            
-            if label == 1: # Donor
-                window = seq[398:404]
-                target = "GT"
-                display_win = window[:2] + "[" + window[2:4] + "]" + window[4:]
-                found = "✅" if window[2:4] == target else "❌"
-            else: # Acceptor
-                window = seq[396:402]
-                target = "AG"
-                display_win = window[:2] + "[" + window[2:4] + "]" + window[4:]
-                found = "✅" if window[2:4] == target else "❌"
-                
-            print(f"{name:<10} | {display_win:<25} | {found} (Target: {target})")
+            # Donor: ...NN[GT]NN... (GT tại 400, 401)
+            # Acceptor: ...[AG]NNNN... (AG tại 398, 399)
+            if label == 1:
+                part = seq[398:404]
+                display = f"{part[:2]}[{part[2:4]}]{part[4:]}"
+                found = "✅" if part[2:4] == "GT" else "❌"
+            else:
+                part = seq[396:402]
+                display = f"{part[:2]}[{part[2:4]}]{part[4:]}"
+                found = "✅" if part[2:4] == "AG" else "❌"
+            print(f"{name:<10} | {display:<30} | {found}")
 
 def prepare_csv_datasets(file_list):
     print(f"[{time.strftime('%H:%M:%S')}] Loading Genome...")
