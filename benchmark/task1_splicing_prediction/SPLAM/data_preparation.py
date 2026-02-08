@@ -19,61 +19,43 @@ def get_sequence_worker(row, fasta_obj):
         parts = row['id'].split('_')
         chrom, pos, strand = parts[1], int(parts[2]), parts[3]
         label = int(row.get('Splicing_types', 0))
+        pos0 = pos - 1 # Chuyển 1-based sang 0-based
         
-        # 1-based (CSV) sang 0-based (Python)
-        pos0 = pos - 1 
-        
-        # Thiết lập Offset dựa trên loại site
-        # Mục tiêu: Donor GT ở [400:402], Acceptor AG ở [398:400]
-        if label == 1:  # DONOR
-            offset = 400
+        if label == 1: # DONOR
+            # Đưa G của GT vào index 400
+            start = pos0 - 400
         elif label == 2: # ACCEPTOR
-            # Dịch thêm 2bp để đưa AG từ vị trí bị lệch về đúng index 398-399
-            offset = 399
-        else: # Nhãn 0 hoặc mặc định
-            offset = 400
-
-        if strand == '+':
-            start = pos0 - offset
-            end = start + 800
-            seq = str(fasta_obj[chrom][max(0, start):end]).upper()
-        else:
-            # Mạch nghịch: Lấy vùng genome tương ứng rồi Reverse Complement
-            # Để motif giữ đúng vị trí sau khi RC, ta lấy đối xứng qua tâm
-            start = pos0 - (800 - offset - 1)
-            end = pos0 + offset + 1
-            seq = str(fasta_obj[chrom][max(0, start):end]).upper()
+            # Đưa G của AG vào index 399
+            start = pos0 - 399
+        else: # NULL
+            start = pos0 - 400
+            
+        end = start + 800
+        seq = str(fasta_obj[chrom][max(0, start):end]).upper()
+        
+        if strand == '-':
             seq = str(Seq(seq).reverse_complement())
             
-        # Đảm bảo độ dài luôn là 800
-        if len(seq) < 800:
-            seq = seq.ljust(800, "N")
-        else:
-            seq = seq[:800]
-            
-        return seq
-    except Exception as e:
+        return seq.ljust(800, "N")[:800]
+    except:
         return "N" * 800
 
 def diagnose_splice_sites(df, sample_size=5):
-    print(f"\n{'Type':<10} | {'Sequence around Center (397-403)':<30} | {'Status'}")
-    print("-" * 70)
+    print(f"\n{'Type':<10} | {'Motif at Expected Index':<25} | {'Status'}")
+    print("-" * 60)
     for label, name in [(1, 'Donor'), (2, 'Acceptor')]:
         samples = df[df['Splicing_types'] == label]
         if len(samples) == 0: continue
         for _, row in samples.sample(min(sample_size, len(samples))).iterrows():
             seq = row['sequence']
-            # Donor: ...NN[GT]NN... (GT tại 400, 401)
-            # Acceptor: ...[AG]NNNN... (AG tại 398, 399)
+            # Donor check at index 200 | Acceptor check at index 600
             if label == 1:
-                part = seq[398:404]
-                display = f"{part[:2]}[{part[2:4]}]{part[4:]}"
-                found = "✅" if part[2:4] == "GT" else "❌"
+                motif = seq[400:402]
+                found = "✅" if motif == "GT" else "❌"
             else:
-                part = seq[396:402]
-                display = f"{part[:2]}[{part[2:4]}]{part[4:]}"
-                found = "✅" if part[2:4] == "AG" else "❌"
-            print(f"{name:<10} | {display:<30} | {found}")
+                motif = seq[398:400]
+                found = "✅" if motif == "AG" else "❌"
+            print(f"{name:<10} | Index 400: [{motif}] | {found}")
 
 def prepare_csv_datasets(file_list):
     print(f"[{time.strftime('%H:%M:%S')}] Loading Genome...")
