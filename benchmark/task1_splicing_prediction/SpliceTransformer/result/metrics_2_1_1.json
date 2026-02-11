@@ -1,20 +1,40 @@
 {
     "test_file": "test_2_1_1.csv",
     "ratio": "2_1_1",
-    "window_radius": 25,
-    "temperature": 0.7,
-    "top_splice_ratio": 0.3,
-    "num_samples": 35132,
+    "config": {
+        "window_radius": 25,
+        "temperature": 0.7,
+        "use_fixed_threshold": true,
+        "threshold_value": 1e-05,
+        "fix_reversed_labels": true
+    },
+    "confusion_matrix": [
+        [
+            15666,
+            1146,
+            832
+        ],
+        [
+            892,
+            7858,
+            72
+        ],
+        [
+            757,
+            85,
+            7824
+        ]
+    ],
     "metrics": {
-        "accuracy": 0.4901514288967323,
-        "precision": 0.23599820398137117,
-        "recall": 0.32632313292536724,
-        "f1": 0.2734599480387449,
-        "mcc": 0.11866009579220761,
-        "specificity": 0.7259928872725122,
-        "auc": 0.47655333088324553,
-        "auprc": 0.41969211079658436,
-        "top_k_acc": 0.5175054081748833,
-        "balanced_acc": 0.32632313292536724
+        "accuracy": 0.8922919275873847,
+        "precision": 0.8885838369141613,
+        "recall": 0.8938201025490878,
+        "f1": 0.891106687838389,
+        "mcc": 0.828109878730974,
+        "specificity": 0.9415871484229988,
+        "auc": 0.9610228826628125,
+        "auprc": 0.9203674473416535,
+        "top_k_acc": 0.9849709666401002,
+        "balanced_acc": 0.8938201025490878
     }
 }
