@@ -11,7 +11,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SEQ_COLUMN = "sequence"  
 LABEL_COLUMN = 'Splicing_types' 
 MAX_LENGTH = 128         
-BATCH_SIZE = 64
+BATCH_SIZE = 256
 
 # EMBEDDING EXTRACTION FUNCTION
 def extract_embeddings_from_nt(sequences, tokenizer, model, device, batch_size=BATCH_SIZE):
