@@ -1,0 +1,40 @@
+{
+    "test_file": "gtex_test_4_1_1.csv",
+    "ratio": "4_1_1",
+    "config": {
+        "window_radius": 25,
+        "temperature": 0.7,
+        "use_fixed_threshold": true,
+        "threshold_value": 1e-05,
+        "fix_reversed_labels": true
+    },
+    "confusion_matrix": [
+        [
+            49401,
+            3236,
+            2467
+        ],
+        [
+            1348,
+            12358,
+            70
+        ],
+        [
+            1257,
+            81,
+            12393
+        ]
+    ],
+    "metrics": {
+        "accuracy": 0.897604435244701,
+        "precision": 0.8561241525591435,
+        "recall": 0.8987094713434024,
+        "f1": 0.8754860700561858,
+        "mcc": 0.8046144715370965,
+        "specificity": 0.9400923221423145,
+        "auc": 0.9698693710861734,
+        "auprc": 0.911626966996809,
+        "top_k_acc": 0.9954848627906695,
+        "balanced_acc": 0.8987094713434024
+    }
+}
