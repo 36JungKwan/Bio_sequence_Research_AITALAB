@@ -1,0 +1,67 @@
+{
+  "1_1_1": {
+    "Ensemble_1_1_1": { "precision": 0.9215, "recall": 0.9216, "f1": 0.9215, "mcc": 0.8823, "auc": 0.9866, "auprc": 0.9743 },
+    "Ensemble_2_1_1": { "precision": 0.9219, "recall": 0.9179, "f1": 0.9188, "mcc": 0.8780, "auc": 0.9870, "auprc": 0.9752 },
+    "Ensemble_4_1_1": { "precision": 0.9130, "recall": 0.9002, "f1": 0.9022, "mcc": 0.8552, "auc": 0.9873, "auprc": 0.9757 },
+    "Ensemble_9_1_1": { "precision": 0.8953, "recall": 0.8619, "f1": 0.8656, "mcc": 0.8072, "auc": 0.9869, "auprc": 0.9749 },
+    "Ensemble_All_40": { "precision": 0.9185, "recall": 0.9105, "f1": 0.9120, "mcc": 0.8686, "auc": 0.9872, "auprc": 0.9754 },
+    "MyModel": { "precision": 0.9180, "recall": 0.9181, "f1": 0.9180, "mcc": 0.8770, "auc": 0.9850, "auprc": 0.9715 },
+    "MaxEntScan": { "precision": 0.7717, "recall": 0.7565, "f1": 0.7595, "mcc": 0.6388, "auc": 0.8859, "auprc": 0.7634 },
+    "MMSplice": { "precision": 0.8840, "recall": 0.8794, "f1": 0.8806, "mcc": 0.8201, "auc": 0.9612, "auprc": 0.9312 },
+    "SPLAM": { "precision": 0.8601, "recall": 0.7954, "f1": 0.7990, "mcc": 0.7222, "auc": 0.9475, "auprc": 0.8824 },
+    "SpliceAI": { "precision": 0.8102, "recall": 0.6446, "f1": 0.6436, "mcc": 0.5427, "auc": 0.8247, "auprc": 0.7588 },
+    "SpliceTransformer": { "precision": 0.8959, "recall": 0.8931, "f1": 0.8939, "mcc": 0.8401, "auc": 0.9633, "auprc": 0.9257 }
+  },
+  "2_1_1": {
+    "Ensemble_1_1_1": { "precision": 0.9041, "recall": 0.9213, "f1": 0.9117, "mcc": 0.8612, "auc": 0.9851, "auprc": 0.9735 },
+    "Ensemble_2_1_1": { "precision": 0.9229, "recall": 0.9181, "f1": 0.9205, "mcc": 0.8735, "auc": 0.9856, "auprc": 0.9745 },
+    "Ensemble_4_1_1": { "precision": 0.9285, "recall": 0.9007, "f1": 0.9130, "mcc": 0.8633, "auc": 0.9860, "auprc": 0.9751 },
+    "Ensemble_9_1_1": { "precision": 0.9265, "recall": 0.8624, "f1": 0.8870, "mcc": 0.8291, "auc": 0.9856, "auprc": 0.9744 },
+    "Ensemble_All_40": { "precision": 0.9274, "recall": 0.9107, "f1": 0.9184, "mcc": 0.8708, "auc": 0.9858, "auprc": 0.9748 },
+    "MyModel": { "precision": 0.9171, "recall": 0.9131, "f1": 0.9151, "mcc": 0.8652, "auc": 0.9836, "auprc": 0.9708 },
+    "MaxEntScan": { "precision": 0.7444, "recall": 0.7556, "f1": 0.7480, "mcc": 0.6014, "auc": 0.8752, "auprc": 0.7646 },
+    "MMSplice": { "precision": 0.8747, "recall": 0.8795, "f1": 0.8767, "mcc": 0.8039, "auc": 0.9592, "auprc": 0.9349 },
+    "SPLAM": { "precision": 0.8953, "recall": 0.7957, "f1": 0.8278, "mcc": 0.7484, "auc": 0.9426, "auprc": 0.8976 },
+    "SpliceAI": { "precision": 0.8510, "recall": 0.6448, "f1": 0.6851, "mcc": 0.5757, "auc": 0.8434, "auprc": 0.7715 },
+    "SpliceTransformer": { "precision": 0.8886, "recall": 0.8938, "f1": 0.8911, "mcc": 0.8281, "auc": 0.9610, "auprc": 0.9204 }
+  },
+  "4_1_1": {
+    "Ensemble_1_1_1": { "precision": 0.8556, "recall": 0.9214, "f1": 0.8837, "mcc": 0.8205, "auc": 0.9838, "auprc": 0.9640 },
+    "Ensemble_2_1_1": { "precision": 0.8942, "recall": 0.9178, "f1": 0.9054, "mcc": 0.8502, "auc": 0.9844, "auprc": 0.9654 },
+    "Ensemble_4_1_1": { "precision": 0.9169, "recall": 0.9005, "f1": 0.9085, "mcc": 0.8550, "auc": 0.9848, "auprc": 0.9663 },
+    "Ensemble_9_1_1": { "precision": 0.9338, "recall": 0.8623, "f1": 0.8936, "mcc": 0.8365, "auc": 0.9844, "auprc": 0.9658 },
+    "Ensemble_All_40": { "precision": 0.9072, "recall": 0.9102, "f1": 0.9087, "mcc": 0.8549, "auc": 0.9846, "auprc": 0.9660 },
+    "MyModel": { "precision": 0.9112, "recall": 0.8972, "f1": 0.9040, "mcc": 0.8478, "auc": 0.9827, "auprc": 0.9618 },
+    "MaxEntScan": { "precision": 0.6751, "recall": 0.7549, "f1": 0.7024, "mcc": 0.5394, "auc": 0.8668, "auprc": 0.7338 },
+    "MMSplice": { "precision": 0.8289, "recall": 0.8801, "f1": 0.8509, "mcc": 0.7656, "auc": 0.9576, "auprc": 0.9216 },
+    "SPLAM": { "precision": 0.9032, "recall": 0.7953, "f1": 0.8387, "mcc": 0.7569, "auc": 0.9381, "auprc": 0.8947 },
+    "SpliceAI": { "precision": 0.8661, "recall": 0.6446, "f1": 0.7080, "mcc": 0.5923, "auc": 0.8577, "auprc": 0.7643 },
+    "SpliceTransformer": { "precision": 0.8440, "recall": 0.8933, "f1": 0.8660, "mcc": 0.7912, "auc": 0.9593, "auprc": 0.8947 }
+  },
+  "9_1_1": {
+    "Ensemble_1_1_1": { "precision": 0.7390, "recall": 0.9209, "f1": 0.8053, "mcc": 0.7195, "auc": 0.9828, "auprc": 0.9372 },
+    "Ensemble_2_1_1": { "precision": 0.8052, "recall": 0.9174, "f1": 0.8528, "mcc": 0.7784, "auc": 0.9834, "auprc": 0.9398 },
+    "Ensemble_4_1_1": { "precision": 0.8560, "recall": 0.9005, "f1": 0.8770, "mcc": 0.8101, "auc": 0.9839, "auprc": 0.9417 },
+    "Ensemble_9_1_1": { "precision": 0.9045, "recall": 0.8622, "f1": 0.8822, "mcc": 0.8190, "auc": 0.9836, "auprc": 0.9410 },
+    "Ensemble_All_40": { "precision": 0.8343, "recall": 0.9102, "f1": 0.8685, "mcc": 0.7988, "auc": 0.9837, "auprc": 0.9411 },
+    "MyModel": { "precision": 0.8980, "recall": 0.8596, "f1": 0.8778, "mcc": 0.8120, "auc": 0.9817, "auprc": 0.9363 },
+    "MaxEntScan": { "precision": 0.5509, "recall": 0.7548, "f1": 0.5960, "mcc": 0.4263, "auc": 0.8598, "auprc": 0.6484 },
+    "MMSplice": { "precision": 0.7100, "recall": 0.8795, "f1": 0.7708, "mcc": 0.6635, "auc": 0.9559, "auprc": 0.8740 },
+    "SPLAM": { "precision": 0.8767, "recall": 0.7957, "f1": 0.8319, "mcc": 0.7385, "auc": 0.9353, "auprc": 0.8723 },
+    "SpliceAI": { "precision": 0.8265, "recall": 0.6443, "f1": 0.7094, "mcc": 0.5767, "auc": 0.8697, "auprc": 0.7326 },
+    "SpliceTransformer": { "precision": 0.7352, "recall": 0.8941, "f1": 0.7958, "mcc": 0.7014, "auc": 0.9577, "auprc": 0.8186 }
+  },
+  "100_1_1": {
+    "Ensemble_1_1_1": { "precision": 0.4249, "recall": 0.9213, "f1": 0.4722, "mcc": 0.3364, "auc": 0.9821, "auprc": 0.7816 },
+    "Ensemble_2_1_1": { "precision": 0.4684, "recall": 0.9178, "f1": 0.5416, "mcc": 0.4107, "auc": 0.9829, "auprc": 0.7907 },
+    "Ensemble_4_1_1": { "precision": 0.5218, "recall": 0.9009, "f1": 0.6106, "mcc": 0.4836, "auc": 0.9834, "auprc": 0.7967 },
+    "Ensemble_9_1_1": { "precision": 0.6080, "recall": 0.8625, "f1": 0.6934, "mcc": 0.5692, "auc": 0.9831, "auprc": 0.7962 },
+    "Ensemble_All_40": { "precision": 0.4958, "recall": 0.9106, "f1": 0.5788, "mcc": 0.4503, "auc": 0.9831, "auprc": 0.7959 },
+    "MyModel": { "precision": 0.5971, "recall": 0.8562, "f1": 0.6823, "mcc": 0.5549, "auc": 0.9813, "auprc": null },
+    "MaxEntScan": { "precision": 0.3642, "recall": 0.7407, "f1": 0.3403, "mcc": 0.1619, "auc": 0.8629, "auprc": 0.4058 },
+    "MMSplice": { "precision": 0.4118, "recall": 0.8796, "f1": 0.4488, "mcc": 0.2979, "auc": 0.9551, "auprc": 0.6121 },
+    "SPLAM": { "precision": 0.7238, "recall": 0.7962, "f1": 0.7185, "mcc": 0.4806, "auc": 0.9331, "auprc": 0.7573 },
+    "SpliceAI": { "precision": 0.5087, "recall": 0.6445, "f1": 0.5566, "mcc": 0.3476, "auc": 0.8792, "auprc": 0.6373 },
+    "SpliceTransformer": { "precision": 0.4241, "recall": 0.8954, "f1": 0.4720, "mcc": 0.3314, "auc": 0.9572, "auprc": 0.4988 }
+  }
+}
