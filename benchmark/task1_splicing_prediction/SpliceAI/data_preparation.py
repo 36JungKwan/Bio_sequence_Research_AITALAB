@@ -6,8 +6,8 @@ import time
 from tqdm import tqdm
 
 # --- CẤU HÌNH ---
-GENOME_PATH = r"D:\my_project\Bio_paper\Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-DATA_FOLDER = r"D:\my_project\Bio_paper\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val"
+GENOME_PATH = r"D:\Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+DATA_FOLDER = r"D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val"
 PREPARED_FOLDER = "prepared_data/"
 CONTEXT = 5000 
 
