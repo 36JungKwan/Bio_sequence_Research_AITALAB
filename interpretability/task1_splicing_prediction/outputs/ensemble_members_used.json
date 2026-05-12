@@ -1,0 +1,8 @@
+{
+  "ensemble_mode": false,
+  "experiment": 7,
+  "ratio": "9_1_1",
+  "paths": [
+    "D:\\Bio_sequence_Research_AITALAB\\train\\task1_splicing_prediction\\training\\trained_models\\experiment_7\\9_1_1\\set_10\\best_model.pt"
+  ]
+}

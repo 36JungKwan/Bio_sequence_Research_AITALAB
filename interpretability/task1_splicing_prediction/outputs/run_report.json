@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-04-14T14:43:53.119577",
+  "input_csv": "D:/cftr_data_interpretability/cftr_interpretability_full.csv",
+  "checkpoint": "D:\\Bio_sequence_Research_AITALAB\\interpretability\\task1_splicing_prediction\\checkpoints\\best_model.pt",
+  "rows": 22306,
+  "window_len": 601,
+  "center_index": 300,
+  "methods": [
+    "IG",
+    "Rollout",
+    "ISM"
+  ],
+  "baseline_metrics": {},
+  "artifacts": {
+    "ig_npy": "D:\\Bio_sequence_Research_AITALAB\\interpretability\\task1_splicing_prediction\\artifacts\\ig_scores.npy",
+    "rollout_npy": "D:\\Bio_sequence_Research_AITALAB\\interpretability\\task1_splicing_prediction\\artifacts\\rollout_scores.npy",
+    "ism_npy": "D:\\Bio_sequence_Research_AITALAB\\interpretability\\task1_splicing_prediction\\artifacts\\ism_scores.npy",
+    "site_level_csv": "D:\\Bio_sequence_Research_AITALAB\\interpretability\\task1_splicing_prediction\\outputs\\interpretability_site_level_metrics.csv",
+    "summary_csv": "D:\\Bio_sequence_Research_AITALAB\\interpretability\\task1_splicing_prediction\\outputs\\interpretability_summary_by_group.csv",
+    "plots_dir": "D:\\Bio_sequence_Research_AITALAB\\interpretability\\task1_splicing_prediction\\plots"
+  }
+}

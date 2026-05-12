@@ -1,0 +1,33 @@
+{
+  "input_csv": "D:/cftr_data_interpretability/cftr_interpretability_ratio_1_10.csv",
+  "single_checkpoint": "D:\\Bio_sequence_Research_AITALAB\\train\\task1_splicing_prediction\\training\\trained_models\\experiment_7\\9_1_1\\set_10\\best_model.pt",
+  "ensemble_mode": false,
+  "ensemble_experiment": 7,
+  "ensemble_ratio": "9_1_1",
+  "ensemble_sets": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "window_len": 601,
+  "center_index": 300,
+  "nt_model": "InstaDeepAI/nucleotide-transformer-500m-human-ref",
+  "class_map": {
+    "0": "negative",
+    "1": "donor",
+    "2": "acceptor"
+  },
+  "infer_batch_size": 128,
+  "max_model_seq_len": 601,
+  "enable_amp": true,
+  "use_ovr_thresholds": false,
+  "donor_threshold": 0.001,
+  "acceptor_threshold": 0.002
+}
