@@ -1,0 +1,11 @@
+dataset_kind,ratio,total,class_0,class_1,class_2,file_type,source_path,file_stem
+test_gencode,100_1_1,938297,920809,8822,8666,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\test_data_embeddings.pt,test_data
+test_gencode,1_1_1,26310,8822,8822,8666,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\test_1_1_1_embeddings.pt,test_1_1_1
+test_gencode,2_1_1,35132,17644,8822,8666,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\test_2_1_1_embeddings.pt,test_2_1_1
+test_gencode,4_1_1,52776,35288,8822,8666,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\test_4_1_1_embeddings.pt,test_4_1_1
+test_gencode,9_1_1,105708,88220,8822,8666,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\test_10_1_1_embeddings.pt,test_10_1_1
+test_gtex,100_1_1,1402857,1375350,13776,13731,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\gtex_test_data_embeddings.pt,gtex_test_data
+test_gtex,1_1_1,41283,13776,13776,13731,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\gtex_test_1_1_1_embeddings.pt,gtex_test_1_1_1
+test_gtex,2_1_1,55059,27552,13776,13731,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\gtex_test_2_1_1_embeddings.pt,gtex_test_2_1_1
+test_gtex,4_1_1,82611,55104,13776,13731,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\gtex_test_4_1_1_embeddings.pt,gtex_test_4_1_1
+test_gtex,9_1_1,165267,137760,13776,13731,pt,D:\Bio_sequence_Research_AITALAB\train\task1_splicing_prediction\data_preparation\train_val\gtex_test_10_1_1_embeddings.pt,gtex_test_10_1_1
