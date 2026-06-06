@@ -1,42 +1,22 @@
 {
   "1_1_1": {
-    "Ensemble_1_1_1": { "precision": 0.9194, "recall": 0.9191, "f1": 0.9193, "mcc": 0.8787, "auc": 0.9850, "auprc": 0.9703 },
-    "Ensemble_2_1_1": { "precision": 0.9167, "recall": 0.9111, "f1": 0.9122, "mcc": 0.8685, "auc": 0.9856, "auprc": 0.9712 },
-    "Ensemble_4_1_1": { "precision": 0.9066, "recall": 0.8897, "f1": 0.8918, "mcc": 0.8412, "auc": 0.9857, "auprc": 0.9718 },
-    "Ensemble_9_1_1": { "precision": 0.8843, "recall": 0.8400, "f1": 0.8437, "mcc": 0.7794, "auc": 0.9854, "auprc": 0.9710 },
-    "Ensemble_All_40": { "precision": 0.9130, "recall": 0.9022, "f1": 0.9038, "mcc": 0.8572, "auc": 0.9857, "auprc": 0.9715 },
-    "IHNSplice": { "precision": 0.9141, "recall": 0.9137, "f1": 0.9139, "mcc": 0.8706, "auc": 0.9832, "auprc": 0.9666 }
+    "IHNSplice-E1": { "precision": 0.9194, "recall": 0.9191, "f1": 0.9193, "mcc": 0.8787, "auroc": 0.9850, "auprc": 0.9703 },
+    "IHNSplice-S1": { "precision": 0.9141, "recall": 0.9137, "f1": 0.9139, "mcc": 0.8706, "auroc": 0.9832, "auprc": 0.9666 }
   },
   "2_1_1": {
-    "Ensemble_1_1_1": { "precision": 0.9053, "recall": 0.9191, "f1": 0.9117, "mcc": 0.8603, "auc": 0.9833, "auprc": 0.9697 },
-    "Ensemble_2_1_1": { "precision": 0.9199, "recall": 0.9111, "f1": 0.9153, "mcc": 0.8652, "auc": 0.9840, "auprc": 0.9709 },
-    "Ensemble_4_1_1": { "precision": 0.9246, "recall": 0.8895, "f1": 0.9044, "mcc": 0.8508, "auc": 0.9842, "auprc": 0.9715 },
-    "Ensemble_9_1_1": { "precision": 0.9189, "recall": 0.8402, "f1": 0.8683, "mcc": 0.8039, "auc": 0.9839, "auprc": 0.9709 },
-    "Ensemble_All_40": { "precision": 0.9244, "recall": 0.9019, "f1": 0.9120, "mcc": 0.8610, "auc": 0.9841, "auprc": 0.9712 },
-    "IHNSplice": { "precision": 0.9139, "recall": 0.9062, "f1": 0.9099, "mcc": 0.8566, "auc": 0.9819, "auprc": 0.9672 }
+    "IHNSplice-E2": { "precision": 0.9199, "recall": 0.9111, "f1": 0.9153, "mcc": 0.8652, "auroc": 0.9840, "auprc": 0.9709 },
+    "IHNSplice-S2": { "precision": 0.9139, "recall": 0.9062, "f1": 0.9099, "mcc": 0.8566, "auroc": 0.9819, "auprc": 0.9672 }
   },
   "4_1_1": {
-    "Ensemble_1_1_1": { "precision": 0.8594, "recall": 0.9192, "f1": 0.8855, "mcc": 0.8216, "auc": 0.9821, "auprc": 0.9602 },
-    "Ensemble_2_1_1": { "precision": 0.8961, "recall": 0.9117, "f1": 0.9036, "mcc": 0.8467, "auc": 0.9828, "auprc": 0.9617 },
-    "Ensemble_4_1_1": { "precision": 0.9188, "recall": 0.8900, "f1": 0.9036, "mcc": 0.8477, "auc": 0.9831, "auprc": 0.9625 },
-    "Ensemble_9_1_1": { "precision": 0.9308, "recall": 0.8402, "f1": 0.8781, "mcc": 0.8154, "auc": 0.9828, "auprc": 0.9619 },
-    "Ensemble_All_40": { "precision": 0.9111, "recall": 0.9025, "f1": 0.9067, "mcc": 0.8516, "auc": 0.9830, "auprc": 0.9622 },
-    "IHNSplice": { "precision": 0.9136, "recall": 0.8859, "f1": 0.8991, "mcc": 0.8405, "auc": 0.9807, "auprc": 0.9581 }
+    "IHNSplice-E4": { "precision": 0.9188, "recall": 0.8900, "f1": 0.9036, "mcc": 0.8477, "auroc": 0.9831, "auprc": 0.9625 },
+    "IHNSplice-S4": { "precision": 0.9136, "recall": 0.8859, "f1": 0.8991, "mcc": 0.8405, "auroc": 0.9807, "auprc": 0.9581 }
   },
-  "9_1_1": {
-    "Ensemble_1_1_1": { "precision": 0.7473, "recall": 0.9190, "f1": 0.8115, "mcc": 0.7254, "auc": 0.9810, "auprc": 0.9303 },
-    "Ensemble_2_1_1": { "precision": 0.8127, "recall": 0.9116, "f1": 0.8556, "mcc": 0.7804, "auc": 0.9818, "auprc": 0.9331 },
-    "Ensemble_4_1_1": { "precision": 0.8625, "recall": 0.8898, "f1": 0.8757, "mcc": 0.8072, "auc": 0.9821, "auprc": 0.9346 },
-    "Ensemble_9_1_1": { "precision": 0.9065, "recall": 0.8403, "f1": 0.8704, "mcc": 0.8025, "auc": 0.9818, "auprc": 0.9339 },
-    "Ensemble_All_40": { "precision": 0.8425, "recall": 0.9023, "f1": 0.8701, "mcc": 0.7996, "auc": 0.9820, "auprc": 0.9342 },
-    "IHNSplice": { "precision": 0.8958, "recall": 0.8446, "f1": 0.8680, "mcc": 0.7982, "auc": 0.9800, "auprc": 0.9292 }
+  "10_1_1": {
+    "IHNSplice-E10": { "precision": 0.9065, "recall": 0.8403, "f1": 0.8704, "mcc": 0.8025, "auroc": 0.9818, "auprc": 0.9339 },
+    "IHNSplice-S10": { "precision": 0.8958, "recall": 0.8446, "f1": 0.8680, "mcc": 0.7982, "auroc": 0.9800, "auprc": 0.9292 }
   },
   "100_1_1": {
-    "Ensemble_1_1_1": { "precision": 0.4311, "recall": 0.9187, "f1": 0.4822, "mcc": 0.3468, "auc": 0.9798, "auprc": 0.7534 },
-    "Ensemble_2_1_1": { "precision": 0.4763, "recall": 0.9112, "f1": 0.5519, "mcc": 0.4196, "auc": 0.9807, "auprc": 0.7614 },
-    "Ensemble_4_1_1": { "precision": 0.5298, "recall": 0.8894, "f1": 0.6184, "mcc": 0.4882, "auc": 0.9811, "auprc": 0.7666 },
-    "Ensemble_9_1_1": { "precision": 0.6111, "recall": 0.8399, "f1": 0.6908, "mcc": 0.5597, "auc": 0.9807, "auprc": 0.7654 },
-    "Ensemble_All_40": { "precision": 0.5048, "recall": 0.9018, "f1": 0.5894, "mcc": 0.4588, "auc": 0.9809, "auprc": 0.7658 },
-    "IHNSplice": { "precision": 0.5986, "recall": 0.8374, "f1": 0.6795, "mcc": 0.5460, "auc": 0.9793, "auprc": 0.7537 }
+    "IHNSplice-E10": { "precision": 0.6111, "recall": 0.8399, "f1": 0.6908, "mcc": 0.5597, "auroc": 0.9807, "auprc": 0.7654 },
+    "IHNSplice-S10": { "precision": 0.5986, "recall": 0.8374, "f1": 0.6795, "mcc": 0.5460, "auroc": 0.9793, "auprc": 0.7537 }
   }
 }
